@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stall Warrior</title>
+<meta name="description" content="Stall Warrior — Rust streamer & content creator.">
+<meta property="og:title" content="Stall Warrior">
+<meta property="og:description" content="Stall Warrior — Rust streamer.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0806">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --amber:#1fc5a6;
+  --amber-2:#64e6cf;
+  --ink:#f3ece3;
+  --dim:#b6a99a;
+  --card:rgba(9,20,18,.42);
+  --line:rgba(80,220,190,.22);
+  --glow:rgba(31,197,166,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:#07050a;color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+
+/* ---------- background layers ---------- */
+#bgvideo,#embers,#bgtint{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+#bgvideo{object-fit:cover;opacity:0;transition:opacity .8s ease}
+#bgvideo.on{opacity:.55}
+#embers{z-index:1}
+#bgtint{z-index:2;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% 30%,transparent 0%,rgba(7,5,10,.35) 60%,rgba(5,3,7,.85) 100%),
+    radial-gradient(90% 60% at 50% 120%,rgba(28,200,170,.14),transparent 60%);}
+
+/* ---------- enter gate ---------- */
+#gate{position:fixed;inset:0;z-index:40;display:grid;place-items:center;cursor:pointer;
+  background:rgba(4,3,6,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:opacity .6s ease,visibility .6s}
+#gate.hide{opacity:0;visibility:hidden}
+#gate .enter{font-weight:700;letter-spacing:.28em;text-transform:uppercase;font-size:.9rem;color:var(--dim);
+  padding:16px 26px;border:1px solid var(--line);border-radius:999px;
+  box-shadow:0 0 44px rgba(31,197,166,.18) inset,0 0 30px rgba(0,0,0,.4);
+  animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{color:var(--ink);box-shadow:0 0 70px rgba(31,197,166,.3) inset,0 0 40px rgba(0,0,0,.5)}}
+
+/* ---------- card ---------- */
+.stage{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;perspective:1000px}
+.card{
+  position:relative;width:min(540px,92vw);
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:34px 30px 26px;
+  backdrop-filter:blur(16px) saturate(1.1);-webkit-backdrop-filter:blur(16px) saturate(1.1);
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03) inset,0 0 60px rgba(34,199,168,.08) inset;
+  transform-style:preserve-3d;transition:transform .15s ease;
+  opacity:0;translate:0 14px;animation:rise .9s cubic-bezier(.2,.8,.2,1) .15s forwards}
+@keyframes rise{to{opacity:1;translate:0 0}}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:22px;padding:1px;pointer-events:none;
+  background:linear-gradient(140deg,rgba(90,225,200,.5),transparent 40%,transparent 60%,rgba(40,205,175,.35));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+.avatar{width:104px;height:104px;border-radius:50%;margin:0 auto 14px;display:block;
+  border:2px solid rgba(80,220,195,.55);object-fit:cover;background:#140d08;
+  box-shadow:0 0 0 5px rgba(40,205,175,.08),0 10px 30px rgba(0,0,0,.5)}
+.name{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;
+  font-weight:800;font-size:2rem;letter-spacing:.01em}
+.name .badges{display:inline-flex;gap:6px}
+.badge{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;
+  background:rgba(255,140,50,.14);border:1px solid var(--line);font-size:.9rem}
+.tag{margin:6px 0 0;text-align:center;color:var(--dim);font-size:1rem}
+.rule{height:1px;margin:20px 2px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+
+/* socials */
+.socials{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.soc{width:46px;height:46px;display:grid;place-items:center;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:var(--dim);
+  transition:transform .15s ease,color .15s ease,border-color .15s ease,background .15s ease}
+.soc:hover{transform:translateY(-3px);color:#fff;border-color:var(--line);background:rgba(40,205,175,.12);
+  box-shadow:0 8px 24px rgba(34,199,168,.18)}
+.soc svg{width:20px;height:20px}
+
+/* projects */
+.sect-title{margin:0 0 10px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-align:center}
+.projects{display:grid;gap:10px}
+.proj{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.proj:hover{transform:translateY(-2px);border-color:var(--line);background:rgba(40,205,175,.1)}
+.proj .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(140deg,#1fc5a6,#0e6d5a);color:#180a02;font-weight:800;font-size:1rem}
+.proj .meta{min-width:0}
+.proj .meta b{display:block;font-size:1.02rem;font-weight:700;letter-spacing:.01em}
+.proj .meta > span{display:block;color:var(--dim);font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj .go{margin-left:auto;color:var(--dim);flex:0 0 auto;transition:transform .15s ease,color .15s ease}
+.proj:hover .go{color:#fff;transform:translate(2px,-2px)}
+
+/* footer row */
+.foot{display:flex;align-items:center;justify-content:space-between;margin-top:22px;color:var(--dim);font-size:.85rem}
+.views{display:inline-flex;align-items:center;gap:7px}
+.views svg{width:16px;height:16px;opacity:.8}
+.mute{display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:6px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.mute:hover{border-color:var(--line);color:#fff}
+
+.site-foot{position:fixed;left:0;right:0;bottom:0;z-index:30;text-align:center;
+  padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);opacity:.78;pointer-events:none}
+.site-foot b{color:var(--amber-2);font-weight:700;letter-spacing:.14em}
+
+@media (max-width:420px){.card{padding:26px 20px 20px}.name{font-size:1.7rem}.avatar{width:92px;height:92px}}
+</style>
+</head>
+<body>
+  <!-- Rust-edit video background: drop a file named bg.mp4 next to index.html and it plays automatically. -->
+  <video id="bgvideo" playsinline muted loop preload="auto" poster="">
+    <source src="/sw-bg.mp4?v=2" type="video/mp4">
+  </video>
+  <canvas id="embers"></canvas>
+  <div id="bgtint"></div>
+
+  <!-- background music: drop a file named music.mp3 next to index.html to enable -->
+  <audio id="bgm" loop preload="none"><source src="/sw-music.mp3" type="audio/mpeg"></audio>
+
+  <div id="gate"><div class="enter">click to enter</div></div>
+
+  <main class="stage">
+    <section class="card" id="card">
+      <img class="avatar" id="avatar" src="/stallwarrior-avatar.png" alt="Sn1p"
+           onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22104%22 height=%22104%22&gt;&lt;rect width=%22104%22 height=%22104%22 fill=%22%23140d08%22/&gt;&lt;text x=%2252%22 y=%2266%22 font-size=%2244%22 fill=%22%23ff7a18%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22&gt;S&lt;/text&gt;&lt;/svg&gt;'">
+      <h1 class="name">Stall Warrior</h1>
+      <p class="tag" id="tag">Rust streamer &amp; content creator</p>
+
+      <div class="rule"></div>
+
+      <div class="socials" id="socials">
+        <a class="soc" href="https://kick.com/astallwarrior1" target="_blank" rel="noopener" title="Kick" aria-label="Kick">
+          <svg viewBox="0 0 24 24"><text x="12" y="17.5" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="16" text-anchor="middle" fill="currentColor">K</text></svg>
+        </a>
+        <a class="soc" href="https://steamcommunity.com/profiles/76561199526884131" target="_blank" rel="noopener" title="Steam" aria-label="Steam">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.98 2a10 10 0 0 0-9.94 9l5.3 2.2a2.82 2.82 0 0 1 1.57-.48l2.36-3.42v-.05a3.75 3.75 0 1 1 3.75 3.75h-.08l-3.37 2.4a2.83 2.83 0 0 1-5.6.6l-3.79-1.57A10 10 0 1 0 11.98 2ZM8.5 17.6l-1.2-.5a2.12 2.12 0 0 0 3.9-.2 2.12 2.12 0 0 0-1.14-2.77 2.1 2.1 0 0 0-1.6-.02l1.25.52a1.56 1.56 0 1 1-1.2 2.88ZM17.75 9.5a2.5 2.5 0 1 1-2.5-2.5 2.5 2.5 0 0 1 2.5 2.5Zm-4.37 0A1.88 1.88 0 1 0 15.25 7.6a1.88 1.88 0 0 0-1.87 1.9Z"/></svg>
+        </a>
+        <a class="soc" href="https://www.tiktok.com/@astallwarrior1" target="_blank" rel="noopener" title="TikTok" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.1 1.5 3.6 3.5 3.9v2.5c-1.3.1-2.5-.3-3.6-1v5.9c0 3.4-2.4 5.7-5.5 5.7A5.4 5.4 0 0 1 5.5 14c0-3 2.3-5.4 5.6-5.1v2.6c-.4-.1-.9-.2-1.3-.1-1.2.2-2 1.1-1.9 2.4.1 1.2 1 2 2.2 2 1.3 0 2.1-1 2.1-2.5V3h2.8Z"/></svg>
+        </a>
+      </div>
+
+      <div class="foot">
+        <span class="views"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg><span id="views">—</span></span>
+        <span class="mute" id="mute">🔇 <span>sound off</span></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">made by <b>sn1p</b></footer>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+
+  /* ---- ember / rust heat background ---- */
+  const cv = $("#embers"), ctx = cv.getContext("2d");
+  let W, H, DPR, parts = [];
+  function resize(){
+    DPR = Math.min(devicePixelRatio||1, 2);
+    W = cv.width = innerWidth*DPR; H = cv.height = innerHeight*DPR;
+    cv.style.width = innerWidth+"px"; cv.style.height = innerHeight+"px";
+    const target = Math.round(innerWidth*innerHeight/14000);
+    parts = Array.from({length: target}, mk);
+  }
+  function mk(){
+    return {
+      x: Math.random()*W, y: H + Math.random()*H,
+      r: (Math.random()*2+0.6)*DPR,
+      v: (Math.random()*0.5+0.25)*DPR,
+      drift: (Math.random()-0.5)*0.4*DPR,
+      a: Math.random()*0.5+0.25,
+      hue: 162 + Math.random()*26,
+      tw: Math.random()*Math.PI*2
+    };
+  }
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.globalCompositeOperation = "lighter";
+    for(const p of parts){
+      p.y -= p.v; p.x += p.drift + Math.sin(p.y*0.01+p.tw)*0.2*DPR; p.tw += 0.02;
+      if(p.y < -10){ Object.assign(p, mk()); p.y = H+10; }
+      const fl = p.a * (0.6 + 0.4*Math.sin(p.tw*3));
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
+      g.addColorStop(0, `hsla(${p.hue},100%,62%,${fl})`);
+      g.addColorStop(1, `hsla(${p.hue},100%,50%,0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*6,0,7); ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    requestAnimationFrame(frame);
+  }
+  addEventListener("resize", resize); resize(); frame();
+
+  /* ---- card tilt ---- */
+  const card = $("#card");
+  addEventListener("mousemove", e => {
+    const r = card.getBoundingClientRect();
+    const dx = (e.clientX-(r.left+r.width/2))/r.width;
+    const dy = (e.clientY-(r.top+r.height/2))/r.height;
+    card.style.transform = `rotateY(${dx*6}deg) rotateX(${-dy*6}deg)`;
+  });
+  addEventListener("mouseleave", ()=> card.style.transform="");
+
+  /* ---- enter gate: start video + optional music on first interaction ---- */
+  const gate = $("#gate"), vid = $("#bgvideo"), bgm = $("#bgm"), mute = $("#mute");
+  vid.addEventListener("loadeddata", ()=> vid.classList.add("on"));
+  let soundOn = false;
+  function enter(){
+    gate.classList.add("hide");
+    vid.play().catch(()=>{});
+    bgm.volume = 0.12;
+    bgm.play().then(()=>{ soundOn = true; mute.innerHTML = "🔊 <span>sound on</span>"; }).catch(()=>{});
+    loadViews(true);
+  }
+  gate.addEventListener("click", enter, {once:true});
+  mute.addEventListener("click", () => {
+    soundOn = !soundOn;
+    if(soundOn){ bgm.volume = 0.12; bgm.play().then(()=>{ mute.innerHTML="🔊 <span>sound on</span>"; }).catch(()=>{ soundOn=false; }); }
+    else { bgm.pause(); mute.innerHTML="🔇 <span>sound off</span>"; }
+  });
+
+  /* ---- view counter: real, shared count served from the VPS (CORS) ---- */
+  const VIEWS_URL = "https://www.onegridrust.com/sn1p-views.php?id=stallwarrior";
+  async function loadViews(increment){
+    try{
+      const r = await fetch(VIEWS_URL, {method: increment ? "POST" : "GET", cache:"no-store"});
+      if(r.ok){ const j = await r.json(); if(typeof j.views === "number"){ animateCount(j.views); return; } }
+    }catch(e){}
+    animateCount(0);
+  }
+  function animateCount(target){
+    const el = $("#views"); const start = Math.max(0, target-60), t0 = performance.now();
+    (function step(t){
+      const k = Math.min(1,(t-t0)/800);
+      el.textContent = Math.round(start + (target-start)*(1-Math.pow(1-k,3))).toLocaleString();
+      if(k<1) requestAnimationFrame(step); else el.textContent = target.toLocaleString();
+    })(t0);
+  }
+  // the count is fetched + incremented when the visitor clicks enter
+})();
+</script>
+</body>
+</html>
