@@ -1,0 +1,2 @@
+# /etc/cron.d/sn1p-status: checks the services once a minute and writes /var/www/sn1p/status.json
+* * * * * root /usr/bin/python3 /usr/local/bin/sn1p-status.py >/dev/null 2>&1

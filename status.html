@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Status · sn1p.win</title>
+<meta name="description" content="Live status of OneGrid Rust, AutoTurret and sn1p.win.">
+<meta name="theme-color" content="#f7f7f4">
+<meta property="og:title" content="Status · sn1p.win">
+<meta property="og:description" content="Live status of OneGrid Rust, AutoTurret and sn1p.win.">
+<meta property="og:image" content="https://sn1p.win/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="180x180" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --sheet:#f7f7f4;--ink:#121212;--cut:#ff3b14;--guide:#00a7ff;--mute:#55554f;--faint:#8a8a83;--line:rgba(18,18,18,.18);
+  --ok:#1b9a55;--warn:#d99a00;--bad:#d64545;--none:rgba(18,18,18,.1);
+  --display:"Anybody","Arial Black",Impact,sans-serif;--sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --pad:clamp(20px,5.5vw,84px);--dash:repeating-linear-gradient(90deg,var(--cut) 0 12px,transparent 12px 20px);color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--sheet);color:var(--ink);font:400 1.0625rem/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--guide);outline-offset:3px;border-radius:3px}
+.wrap{width:100%;max-width:1040px;margin-inline:auto;padding-inline:var(--pad)}
+.cutline{height:3px;background:var(--dash);border:0;margin:0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:clamp(16px,3vh,28px);font:600 .98rem/1 var(--sans)}
+.brand{font:800 1.3rem/1 var(--display);font-variation-settings:"wdth" 120;letter-spacing:-.01em}
+.back{border-bottom:2px solid transparent;padding-bottom:3px;transition:border-color .2s}.back:hover{border-color:var(--cut)}
+h1{margin:clamp(24px,5vw,56px) 0 0;font:900 clamp(2.8rem,11vw,8.5rem)/.9 var(--display);font-variation-settings:"wdth" 130;letter-spacing:-.03em}
+.sub{margin:16px 0 clamp(28px,5vw,52px);max-width:34ch;font:500 clamp(1.1rem,2vw,1.4rem)/1.35 var(--sans);color:var(--mute)}
+.banner{display:flex;align-items:center;gap:16px;padding-block:clamp(20px,3vw,32px)}
+.banner .dot{width:18px;height:18px;border-radius:50%;background:var(--none);flex:0 0 auto}
+.banner b{display:block;font:800 clamp(1.5rem,3.6vw,2.6rem)/1.1 var(--sans);letter-spacing:-.025em}
+.banner span{color:var(--mute);font-size:.95rem}
+.banner[data-s="operational"] .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(27,154,85,.6);animation:ping 2.2s infinite}
+.banner[data-s="degraded"] .dot{background:var(--warn)}.banner[data-s="outage"] .dot{background:var(--bad)}
+@keyframes ping{70%{box-shadow:0 0 0 12px rgba(27,154,85,0)}100%{box-shadow:0 0 0 0 rgba(27,154,85,0)}}
+.svc{position:relative;padding-block:clamp(22px,3vw,34px)}
+.svc::after{content:"";position:absolute;left:0;right:0;bottom:-1.5px;height:3px;background:var(--dash)}
+.row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.nm{font:800 clamp(1.4rem,3vw,2rem)/1.1 var(--sans);letter-spacing:-.02em}
+.det{margin-top:4px;color:var(--mute);font-size:1rem}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:999px;font:700 .95rem/1 var(--sans);border:2px solid var(--ink);white-space:nowrap}
+.pill i{width:9px;height:9px;border-radius:50%;background:var(--none)}
+.pill[data-s="ok"] i{background:var(--ok)}.pill[data-s="degraded"] i{background:var(--warn)}.pill[data-s="down"] i{background:var(--bad)}
+.pill[data-s="degraded"]{border-color:var(--warn)}.pill[data-s="down"]{border-color:var(--bad)}
+.bars{display:grid;grid-template-columns:repeat(90,1fr);gap:2px;margin-top:20px;height:34px}
+.bars i{display:block;border-radius:2px;background:var(--none);min-width:0}
+.bars i.ok{background:var(--ink)}.bars i.deg{background:var(--warn)}.bars i.down{background:var(--cut)}
+.bars i:hover{outline:2px solid var(--guide);outline-offset:1px}
+.axis{display:flex;justify-content:space-between;margin-top:8px;font:600 .85rem/1 var(--sans);color:var(--faint)}
+.note{margin:28px 0 0;color:var(--mute);font-size:.95rem;max-width:62ch}
+.skel{padding:34px 0;color:var(--mute)}
+.foot{padding-block:36px 56px;font-size:.92rem;color:var(--mute)}
+.foot a{text-decoration:underline;text-underline-offset:3px}.foot a:hover{color:var(--cut)}
+@media (max-width:560px){.bars{grid-template-columns:repeat(45,1fr)}.bars i:nth-child(-n+45){display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="bar"><a class="brand" href="/">Sn1p.win</a><a class="back" href="/">Back to the site</a></div>
+  <h1>System status</h1>
+  <p class="sub">Live status for OneGrid Rust, AutoTurret and this site.</p>
+  <hr class="cutline">
+</header>
+
+<main class="wrap">
+  <div class="banner" id="banner" data-s="">
+    <span class="dot"></span>
+    <div><b id="bText">Checking…</b><span id="bSub">&nbsp;</span></div>
+  </div>
+  <hr class="cutline">
+  <div id="list"><div class="skel">Loading status…</div></div>
+  <p class="note">Checks run every minute. Each bar is one day over the last 90 days: black means every check passed, yellow means slow or partial, red means at least one check failed, and light grey means no data yet. History starts from when monitoring was switched on.</p>
+</main>
+
+<footer class="wrap foot">© 2026 Sn1p. <a href="/">sn1p.win</a></footer>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const LABEL = {ok:"Operational", degraded:"Degraded", down:"Down"};
+  const BANNER = {operational:"All systems operational", degraded:"Some systems are degraded", outage:"Service disruption"};
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  let updated = 0;
+
+  function bar(d){
+    const [date, ok, deg, down] = d, total = ok + deg + down;
+    let cls = "", tip = date + ": no data";
+    if(total){
+      const up = Math.round(100 * (ok + deg) / total * 10) / 10;
+      cls = down ? "down" : (deg ? "deg" : "ok");
+      tip = date + ": " + up + "% up" + (down ? " (" + down + " failed check" + (down===1?"":"s") + ")" : "");
+    }
+    return '<i class="'+cls+'" title="'+esc(tip)+'"></i>';
+  }
+
+  function render(j){
+    updated = j.updated;
+    const b = $("#banner");
+    b.dataset.s = j.overall; $("#bText").textContent = BANNER[j.overall] || "Status unknown";
+    $("#list").innerHTML = j.services.map(s => {
+      const lat = s.latency_ms != null ? ", " + s.latency_ms + " ms" : "";
+      const up = s.uptime != null ? s.uptime.toFixed(2) + "% uptime" : "No uptime data yet";
+      return '<div class="svc"><div class="row"><div><div class="nm">'+esc(s.name)+'</div><div class="det">'+esc(s.detail)+lat+'</div></div>'
+        + '<span class="pill" data-s="'+s.state+'"><i></i>'+LABEL[s.state]+'</span></div>'
+        + '<div class="bars" role="img" aria-label="90 day history for '+esc(s.name)+'">'+s.days.map(bar).join("")+'</div>'
+        + '<div class="axis"><span>90 days ago</span><span>'+up+'</span><span>Today</span></div></div>';
+    }).join("");
+    tickAge();
+  }
+  function tickAge(){
+    if(!updated) return;
+    const s = Math.max(0, Math.round(Date.now()/1000 - updated));
+    $("#bSub").textContent = "Last checked " + (s < 90 ? s + " seconds ago" : Math.round(s/60) + " minutes ago");
+  }
+  async function load(){
+    try{
+      const r = await fetch("/status.json", {cache:"no-store"});
+      if(!r.ok) throw 0;
+      render(await r.json());
+    }catch(e){
+      if(!updated){ $("#bText").textContent = "Status unavailable"; $("#bSub").textContent = "Could not load the latest checks. Try again in a minute."; $("#list").innerHTML = ""; }
+    }
+  }
+  load(); setInterval(load, 30000); setInterval(tickAge, 5000);
+})();
+</script>
+</body>
+</html>
