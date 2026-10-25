@@ -111,8 +111,7 @@ button{font:inherit;color:inherit}
 .pres[data-s="idle"] i{background:var(--warn)}.pres[data-s="dnd"] i{background:var(--bad)}
 @keyframes ping{70%{box-shadow:0 0 0 9px rgba(27,154,85,0)}100%{box-shadow:0 0 0 0 rgba(27,154,85,0)}}
 .clock{color:var(--mute);font-variant-numeric:tabular-nums}
-.sound{white-space:nowrap;background:none;border:1.5px solid var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer;font:600 .9rem/1 var(--sans);transition:background .2s,color .2s}
-.sound:hover{background:var(--ink);color:var(--sheet)}
+
 
 /* ---------- hero: the name is whole, and its letters widen toward the cursor ---------- */
 .hero{padding-bottom:clamp(36px,6vw,80px)}
@@ -129,7 +128,7 @@ button{font:inherit;color:inherit}
 .btn.solid:hover{background:var(--cut);border-color:var(--cut);color:#fff}
 .btn svg{width:15px;height:15px}
 .portrait{grid-column:11/13;justify-self:end;position:relative;width:clamp(110px,12vw,170px);aspect-ratio:1}
-.portrait video{position:absolute;inset:9%;width:82%;height:82%;border-radius:50%;object-fit:cover;background:#140d08}
+.portrait img{position:absolute;inset:9%;width:82%;height:82%;border-radius:50%;object-fit:cover;background:#6cc4ff}
 .portrait svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 40s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -271,7 +270,7 @@ button{font:inherit;color:inherit}
   @page{size:auto;margin:16mm}
   html,body{background:#fff!important;color:#111;overflow:visible!important}
   body{font-size:11.5pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .ruler,.mat,.snip,.bar,.cta,.portrait,.sound,.copy,.replay,.print-btn,.work-link,.tools,.facts,.work::before,.works::before,
+  .ruler,.mat,.snip,.bar,.cta,.portrait,.copy,.replay,.print-btn,.work-link,.tools,.facts,.work::before,.works::before,
   section[aria-label="Right now"],#live,.sect-head p,.foot .r,.egg-under,.egg-half,.egg-fx{display:none!important}
   .print-only{display:block}
   .wrap{max-width:none;padding-inline:0}
@@ -320,8 +319,6 @@ button{font:inherit;color:inherit}
 (function(){var h=document.documentElement;try{var r=matchMedia("(prefers-reduced-motion: reduce)").matches,s=sessionStorage.getItem("introSeen");if(/[?&]intro/.test(location.search))s=null;h.classList.add(r||s?"no-intro":"is-intro")}catch(e){h.classList.add("no-intro")}})();
 </script>
 
-<audio id="bgm" loop preload="none"><source src="music.mp3" type="audio/mpeg"></audio>
-
 <div class="ruler" aria-hidden="true"><i id="rulerMark"></i><b id="rulerCur"></b></div>
 <div class="mat" id="mat" aria-hidden="true"></div>
 <div class="print-marks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -342,7 +339,6 @@ button{font:inherit;color:inherit}
       <div class="bar-r">
         <span class="pres" id="pres" data-s="offline"><i></i><span id="presText">Discord</span></span>
         <span class="clock" id="clock" title="My local time"></span>
-        <button class="sound" id="sound" type="button" aria-pressed="false">Sound off</button>
       </div>
     </div>
 
@@ -359,7 +355,7 @@ button{font:inherit;color:inherit}
       </div>
       <div class="portrait">
         <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="none" stroke="#ff3b14" stroke-width="2" stroke-dasharray="7 5" stroke-linecap="butt"/></svg>
-        <video id="avatar" autoplay muted loop playsinline poster="pfp-poster.jpg" aria-label="Sn1p"><source src="pfp.mp4" type="video/mp4"></video>
+        <picture><source media="(prefers-reduced-motion: reduce)" srcset="pfp.png"><img id="avatar" src="pfp.gif" alt="Sn1p" width="170" height="170"></picture>
       </div>
     </div>
   </div>
@@ -548,15 +544,6 @@ button{font:inherit;color:inherit}
   const tick = () => { clockEl.textContent = clockFmt.format(new Date()) + " Central"; };
   tick(); setInterval(tick, 15000);
 
-  /* ---------------- sound ---------------- */
-  const bgm = $("#bgm"), soundBtn = $("#sound");
-  let soundOn = false;
-  soundBtn.addEventListener("click", () => {
-    if(soundOn){ bgm.pause(); soundOn = false; paint(); }
-    else { bgm.volume = 0.14; bgm.play().then(() => { soundOn = true; paint(); }).catch(() => {}); }
-  });
-  function paint(){ soundBtn.textContent = soundOn ? "Sound on" : "Sound off"; soundBtn.setAttribute("aria-pressed", soundOn); }
-
   /* ---------------- live data ---------------- */
   const live = { disc: null, og: null, at: null };
   const LBL = {online:"Online on Discord", idle:"Idle on Discord", dnd:"Do not disturb on Discord", offline:"Offline on Discord"};
@@ -618,7 +605,7 @@ button{font:inherit;color:inherit}
   }
 
   /* GitHub contributions: a saved snapshot draws instantly, then the live data replaces it */
-  const GH_SNAP = {"s":"2025-10-19","c":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,1,0,0,16,13,8,13,10,0,6,16,1,0,3,0,0,0,2,0],"l":"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041004444403410200010"};
+  const GH_SNAP = {"s":"2025-10-26","c":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,1,0,0,16,13,8,13,10,0,6,16,1,0,3,0,0,0,2,0,6,0],"l":"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004100444440341020001030"};
   function drawGh(start, counts, levels){
     const pad = new Date(start + "T00:00:00Z").getUTCDay();
     const t0 = Date.parse(start + "T00:00:00Z");
