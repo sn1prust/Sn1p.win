@@ -194,7 +194,7 @@ button{font:inherit;color:inherit}
 /* ---------- work: nested shells ---------- */
 .units{display:grid;gap:var(--gap);margin-top:var(--gap)}
 .unit{
-  position:relative;padding:6px;border-radius:26px;
+  position:relative;min-width:0;padding:6px;border-radius:26px;
   background:rgba(233,231,226,.035);
   box-shadow:inset 0 0 0 1px rgba(233,231,226,.07);
   transition:transform .7s var(--ease),background .7s var(--ease),box-shadow .7s var(--ease);
@@ -245,11 +245,11 @@ button{font:inherit;color:inherit}
 /* ---------- live panels ---------- */
 .tele{display:grid;gap:var(--gap);margin-top:var(--gap);grid-template-columns:repeat(3,minmax(0,1fr))}
 .panel{
-  padding:6px;border-radius:26px;background:rgba(233,231,226,.035);
+  min-width:0;padding:6px;border-radius:26px;background:rgba(233,231,226,.035);
   box-shadow:inset 0 0 0 1px rgba(233,231,226,.07);
 }
 .panel-core{
-  height:100%;border-radius:20px;padding:clamp(18px,2.2vw,28px);
+  height:100%;min-width:0;border-radius:20px;padding:clamp(18px,2.2vw,28px);
   background:linear-gradient(170deg,rgba(18,20,27,.86),rgba(9,10,14,.86));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.055);
   display:flex;flex-direction:column;
@@ -288,12 +288,13 @@ button{font:inherit;color:inherit}
 .p-link span{transition:transform .4s var(--ease)}
 .p-link:hover span{transform:translateX(3px)}
 
-.vis{display:grid;gap:11px;margin-top:16px}
-.vrow{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font:500 10px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase}
-.vrow b{color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
-.vbar{grid-column:1/-1;height:3px;border-radius:2px;background:rgba(233,231,226,.07);overflow:hidden}
-.vbar i{display:block;height:100%;width:var(--w);border-radius:2px;background:var(--mint);opacity:.75}
-.vrow:first-child .vbar i{opacity:1;box-shadow:0 0 8px rgba(92,242,194,.6)}
+.vis{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.vrow{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;
+  background:rgba(233,231,226,.05);box-shadow:inset 0 0 0 1px rgba(233,231,226,.08);
+  font:500 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--dim);
+}
+.vrow::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--mint);opacity:.6;flex:none}
 .credit{margin-top:14px;font:500 9px/1.5 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .credit a{border-bottom:1px solid var(--line)}
 .credit a:hover{color:var(--mint)}
@@ -380,7 +381,7 @@ button{font:inherit;color:inherit}
   @page{size:auto;margin:16mm}
   html,body{background:#fff!important;color:#000!important}
   body{font-size:10pt;line-height:1.45}
-  .aura,.veil,.nav,.field,.field-note,.cta,.chips,.p-link,.gh-scroll,.lg,.vbar,.credit,.r-go,.foot-links,.sig,.plate,.egg,.copy-wrap{display:none!important}
+  .aura,.veil,.nav,.field,.field-note,.cta,.chips,.p-link,.gh-scroll,.lg,.credit,.r-go,.foot-links,.sig,.plate,.egg,.copy-wrap{display:none!important}
   .print-only{display:block!important}
   .hero{padding-top:0}
   .print-name{font:700 46pt/1 var(--disp);letter-spacing:-.05em;margin-bottom:6pt}
@@ -575,7 +576,7 @@ button{font:inherit;color:inherit}
       <div class="panel rv" id="visWrap" hidden>
         <div class="panel-core">
           <h3 class="p-h" id="visTitle">Visitors</h3>
-          <p class="p-cap">Top countries &mdash; counted without storing anyone's IP address</p>
+          <p class="p-cap">Where people read this from &mdash; counted without storing anyone's IP address</p>
           <div class="vis" id="visList"></div>
           <p class="credit">IP geolocation by <a href="https://db-ip.com" target="_blank" rel="noopener">DB-IP.com</a></p>
         </div>
@@ -974,7 +975,7 @@ REV 3.0 / CHARACTER FIELD</div>
   }
 
   /* GitHub contributions: a build-time snapshot paints instantly, live data replaces it */
-  const GH_SNAP = {"s":"2025-10-26","c":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,1,0,0,16,13,8,13,10,0,6,16,1,0,3,0,0,0,2,0,6,14,0,0,0,11,0],"l":"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000410044343024101000102400040"};
+  const GH_SNAP = {"s":"2025-10-26","c":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,1,0,0,16,13,8,13,10,0,6,16,1,0,3,0,0,0,2,0,6,14,0,0,0,12,0],"l":"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000410044343024101000102400040"};
   function drawGh(start, counts, levels){
     const pad = new Date(start + "T00:00:00Z").getUTCDay();
     const t0 = Date.parse(start + "T00:00:00Z");
@@ -1012,12 +1013,11 @@ REV 3.0 / CHARACTER FIELD</div>
   const regions = (() => { try { return new Intl.DisplayNames(["en"], { type:"region" }); } catch(e){ return null; } })();
   function drawVisitors(j){
     if(!j || !j.visits || !j.top || !j.top.length) return;
-    const max = Math.max(...j.top.map(t => t[1]));
     $("#visTitle").textContent = "Visitors from " + num(j.countries) + (j.countries === 1 ? " country" : " countries");
-    $("#visList").innerHTML = j.top.slice(0, 6).map(([c, n]) => {
+    /* names only: no per-country counts, no bars */
+    $("#visList").innerHTML = j.top.slice(0, 8).map(([c]) => {
       let nm = c; try { nm = regions ? regions.of(c) : c; } catch(e){}
-      return '<div class="vrow"><span>' + esc(nm) + '</span><b>' + num(n) + '</b><span class="vbar"><i style="--w:' +
-        Math.max(4, Math.round(100 * n / max)) + '%"></i></span></div>';
+      return '<span class="vrow">' + esc(nm) + '</span>';
     }).join("");
     $("#visWrap").hidden = false;
   }
