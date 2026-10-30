@@ -2,7 +2,7 @@
 
 Personal site for **Sn1p**, founder of OneGrid Rust and AutoTurret. Live at [sn1p.win](https://sn1p.win).
 
-A static page with an opening animation (scissors cut the name in half), live status data and a visitor-country counter.
+A static page whose name is a live field of text characters. A canvas grid samples the word SN1P as a mask every frame and picks a character per cell: heavy ones inside the letterforms, light ones at the edges, sparse drifting dust elsewhere. It resolves out of noise on load, and the cursor bends where each cell samples, so the letters stretch and glow as you move through them. Also live status data and a visitor-country counter. No images are used anywhere on the page.
 
 ## Files
 
@@ -11,7 +11,8 @@ A static page with an opening animation (scissors cut the name in half), live st
 | `index.html` | The site: one page, inline CSS and JavaScript |
 | `status.html` | Status page, reads `status.json` |
 | `og.png` | Link-preview image (1200x630) |
-| `bg.mp4`, `pfp.mp4`, `music.mp3`, images | Media used by the page |
+| `og.png`, `favicon*.png` | Link preview and icons, the only images the page still uses |
+| `bg.mp4`, `pfp.mp4`, `music.mp3`, other images | Left over from earlier designs, no longer referenced |
 | `server/sn1p-status.py` | Checks OneGrid, AutoTurret and sn1p.win once a minute and writes `status.json` with 90-day history |
 | `server/countries.php` | Counts visits per country. Stores totals only: no IP addresses, no cookies |
 | `server/geo-build.py` | Turns the free DB-IP country database into the lookup file `countries.php` reads |
