@@ -15,7 +15,7 @@ Needs Node 18+ and two tokens you create yourself:
 GITEA_TOKEN=xxx GITHUB_USER=sn1prust GITHUB_TOKEN=xxx node gitea-to-github.mjs --dry-run
 ```
 
-Drop `--dry-run` to apply. `--public` makes new GitHub repos public (default private). `--only a,b` limits it to some repos.
+Drop `--dry-run` to apply. Repos in `NEVER_MIRROR` (currently `thy-opposition`) are always skipped, whatever the flags. `--public` makes new GitHub repos public (default private). `--only a,b` limits it to some repos.
 
 ## Why squares might not appear
 

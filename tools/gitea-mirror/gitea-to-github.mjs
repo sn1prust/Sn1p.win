@@ -26,6 +26,9 @@ const DRY          = has('--dry-run');
 const PRIVATE      = !has('--public');
 const ONLY         = (opt('--only') || '').split(',').map(s => s.trim()).filter(Boolean);
 
+// Repos that must never be copied to GitHub, public or private. No flag overrides this.
+const NEVER_MIRROR = new Set(['thy-opposition']);
+
 for (const [k, v] of Object.entries({ GITEA_TOKEN, GITHUB_USER, GITHUB_TOKEN })) {
   if (!v) { console.error('Missing ' + k + '. See the header of this file.'); process.exit(1); }
 }
@@ -152,6 +155,7 @@ async function authorEmails(owner, name) {
   const rows = [];
 
   for (const r of repos) {
+    if (NEVER_MIRROR.has(r.name.toLowerCase())) { rows.push([r.name, 'skipped', 'never mirrored to GitHub']); continue; }
     if (r.empty)  { rows.push([r.name, 'skipped', 'repo is empty']); continue; }
     if (r.mirror) { rows.push([r.name, 'skipped', 'this is a pull mirror of something else']); continue; }
 
