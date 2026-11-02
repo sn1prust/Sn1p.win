@@ -340,49 +340,56 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
   .ov .wide { grid-column: 1 / -1; }
 }
 
-/* Link graph */
+/* Link graph: three columns, person -> projects -> languages */
 .graph {
-  position: relative; height: 320px; overflow: hidden; touch-action: pan-y;
+  position: relative; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
   background-color: var(--panel);
   background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1.4px);
   background-size: 16px 16px; background-position: 8px 8px;
 }
-.edges { position: absolute; inset: 0; width: 100%; height: 100%; }
-.edge line { stroke: var(--edge); stroke-width: 1.25; }
-.edge.is-sample line { stroke-dasharray: 4 3; }
+.gcv { position: relative; }
+.edges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.edge { fill: none; stroke: var(--edge); stroke-width: 1.25; transition: opacity .12s; }
+.edge.side { stroke-dasharray: 4 3; }
 .edges .ah { fill: var(--edge); }
 .edges .ah-hl { fill: var(--blue); }
-.edge .eb { fill: var(--panel); }
-.edge text { fill: var(--text-3); font: 500 11px var(--f-ui); }
-.edge.hl line { stroke: var(--blue); stroke-width: 1.5; }
-.edge.hl text { fill: var(--blue-ink); }
-.has-hl .edge:not(.hl) { opacity: .35; }
+.edge.hl { stroke: var(--blue); stroke-width: 1.5; }
+.has-hl .edge:not(.hl) { opacity: .3; }
+.gcol-h { position: absolute; color: var(--text-3); font-size: 11px; font-weight: 600; line-height: 16px; }
 .gnode {
-  position: absolute; left: 0; top: 0; z-index: 1;
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  padding: 0; border: 0; border-radius: 3px; background: none; color: var(--text);
-  transform: translate(-50%, -16px); cursor: pointer; transition: opacity .12s;
+  position: absolute; z-index: 1; display: flex; align-items: center; gap: 10px;
+  padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r);
+  background: var(--panel-2); color: var(--text); text-align: left; text-decoration: none;
+  font: inherit; cursor: pointer; transition: opacity .12s, border-color .12s;
 }
-.gnode .gd { position: relative; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--c); color: var(--on-fill); box-shadow: 0 0 0 3px var(--panel); }
-.gnode .gd svg { width: 15px; height: 15px; fill: currentColor; }
-.gnode.is-sample .gd::after { content: ""; position: absolute; inset: -5px; border: 1.5px dashed var(--line-3); border-radius: 50%; }
-.gnode .gl { max-width: 150px; padding: 0 4px; border-radius: 2px; background: var(--panel); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gnode:hover .gl, .gnode.hl .gl { color: var(--blue-ink); }
-.gnode.sel .gd { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--blue); }
-.gnode.sel .gl { color: var(--blue-ink); font-weight: 600; }
-.gnode:focus-visible { outline-offset: 4px; }
-.gnode.lab-top { flex-direction: column-reverse; transform: translate(-50%, calc(-100% + 16px)); }
-.gnode.self { z-index: 2; cursor: grab; transform: translate(-50%, -22px); }
-.gnode.self .gd { width: 44px; height: 44px; border-radius: var(--r); background: var(--avatar-bg) var(--av) center / cover no-repeat; box-shadow: 0 0 0 1px var(--line-2), 0 0 0 4px var(--panel); }
-.gnode.self .gl { font-weight: 650; font-size: 13px; }
-.graph.dragging, .graph.dragging .gnode { cursor: grabbing; }
-.has-hl .gnode:not(.hl):not(.self) { opacity: .5; }
+.gnode:hover, .gnode.hl { border-color: var(--blue-line); }
+.gnode.sel { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+.gnode.side { border-style: dashed; }
+.has-hl .gnode:not(.hl) { opacity: .45; }
+.gnode .gt { display: grid; min-width: 0; }
+.gnode .gl { overflow: hidden; font-size: 13px; font-weight: 600; line-height: 17px; white-space: nowrap; text-overflow: ellipsis; }
+.gnode .gs { overflow: hidden; color: var(--text-2); font-size: 12px; line-height: 16px; white-space: nowrap; text-overflow: ellipsis; }
+.gnode .gs .st { color: var(--ink); }
+.gnode .ti { flex: none; }
+.gnode.self { cursor: default; }
+.gnode.self .av { flex: none; width: 34px; height: 34px; border-radius: var(--r); background: var(--avatar-bg) var(--av) center / cover no-repeat; box-shadow: 0 0 0 1px var(--line-2); }
+.gnode.self .gl { font-size: 14px; }
+.gnode.lang { gap: 8px; padding: 0 8px; background: var(--panel); }
+.gnode.lang .gl { font-size: 12px; font-weight: 500; }
+.hex { flex: none; width: 14px; height: 14px; fill: var(--slate); }
 .legend .lg { display: inline-flex; align-items: center; gap: 6px; }
-.lg-sample { width: 14px; height: 14px; border: 1.5px dashed var(--line-3); border-radius: 50%; }
+.lg-side { width: 16px; height: 0; border-top: 1.5px dashed var(--edge); }
 .legend .hint { margin-left: auto; color: var(--text-3); }
 .gcard { container-type: inline-size; }
 @container (max-width: 640px) { .legend .hint { display: none; } }
-@container (max-width: 400px) { .graph { height: 360px; } }
+
+/* Live numbers */
+.kv.now { grid-template-columns: minmax(96px, max-content) minmax(0, 1fr); row-gap: 2px; }
+.kv.now dd { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding-block: 6px; }
+.kv.now dt { padding-block: 6px; }
+.nw { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.nk { color: var(--text-3); font-size: 12px; }
+.dr-live-at { margin: 6px 0 0; }
 
 /* Histograms */
 .hist-h { margin: 0 0 6px; color: var(--text-2); font-size: 12px; font-weight: 600; }
@@ -644,7 +651,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
     <nav class="crumbs" aria-label="Breadcrumb">
       <ol>
         <li class="far">People</li>
-        <li>Developers</li>
+        <li>Founders</li>
         <li aria-current="page">Sn1p</li>
       </ol>
     </nav>
@@ -694,14 +701,18 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
 
       <section class="panel" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
         <div class="ov">
-          <div class="card gcard">
+          <div class="card gcard wide">
             <div class="card-h">
               <h2>Link graph</h2>
               <span class="meta" id="graph-meta"></span>
-              <button class="ibtn push" type="button" id="graph-reset" aria-label="Reset layout" title="Reset layout" disabled><svg class="i" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8.4a5.1 5.1 0 1 0 1.5-4"/><path d="M2.75 2.5v3h3"/></svg></button>
-            </div>
-            <div class="graph" id="graph"><svg class="edges" id="graph-svg" aria-hidden="true"></svg></div>
+                          </div>
+            <div class="graph" id="graph"><div class="gcv" id="gcv"><svg class="edges" id="graph-svg" aria-hidden="true"></svg></div></div>
             <div class="card-f legend" id="graph-legend"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><h2>Right now</h2><span class="meta" id="now-meta">Checking</span></div>
+            <div class="card-b"><dl class="kv now" id="now-list"></dl></div>
           </div>
 
           <div class="card">
@@ -715,7 +726,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
               <ul class="hist" id="hist-status"></ul>
               <h3 class="hist-h">Type</h3>
               <ul class="hist" id="hist-type"></ul>
-              <h3 class="hist-h">Tools</h3>
+              <h3 class="hist-h">Languages</h3>
               <div class="tchips" id="sum-tools"></div>
             </div>
           </div>
@@ -738,7 +749,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
             <div class="field">
               <svg class="i" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.4 10.4 3.6 3.6"/></svg>
               <label class="sr" for="proj-q">Filter projects</label>
-              <input id="proj-q" type="search" placeholder="Filter by name, type or tool" autocomplete="off" spellcheck="false">
+              <input id="proj-q" type="search" placeholder="Filter by name, type or language" autocomplete="off" spellcheck="false">
             </div>
             <div class="facet" role="group" aria-labelledby="facet-type-l" id="facet-type"></div>
             <div class="facet" role="group" aria-labelledby="facet-status-l" id="facet-status"></div>
@@ -761,7 +772,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
                   <th scope="col" data-key="name"><button class="th" type="button" data-sort="name">Name</button></th>
                   <th scope="col" data-key="type"><button class="th" type="button" data-sort="type">Type</button></th>
                   <th scope="col" data-key="status"><button class="th" type="button" data-sort="status">Status</button></th>
-                  <th scope="col">Tools</th>
+                  <th scope="col">Languages</th>
                   <th scope="col" data-key="year" class="r"><button class="th" type="button" data-sort="year">Year</button></th>
                   <th scope="col">Link</th>
                 </tr>
@@ -845,7 +856,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
 const PROFILE = {
   name: "Sn1p",
   handle: "sn1p",
-  role: "Developer"
+  role: "Founder"
 };
 
 // type: website | cli | service | library | app      status: live | building | sample | archived
@@ -855,10 +866,11 @@ const PROJECTS = [
     name: "sn1p.win",
     type: "website",
     status: "live",
-    summary: "Personal site and portfolio.",
-    tools: ["HTML", "CSS", "JavaScript"],
+    summary: "This site. One page laid out like an object view, with live numbers from the projects below, plus the status checker and visitor counter behind it.",
+    tools: ["HTML", "CSS", "JavaScript", "PHP", "Python"],
     year: null,
-    links: { site: "https://sn1p.win" }
+    links: { site: "https://sn1p.win", repo: "https://github.com/sn1prust/Sn1p.win" },
+    live: { status: { sn1p: "Website" } }
   },
   {
     id: "prompted",
@@ -868,7 +880,8 @@ const PROJECTS = [
     summary: "Co-founder. A community for vibe coders to collaborate.",
     tools: [],
     year: null,
-    links: { discord: "https://discord.gg/6yXnfRdmyp" }
+    links: { discord: "https://discord.gg/6yXnfRdmyp" },
+    live: { invite: "6yXnfRdmyp" }
   },
   {
     id: "onegrid-rust",
@@ -876,8 +889,9 @@ const PROJECTS = [
     type: "service",
     status: "live",
     summary: "Founder and operator. An EU Rust server running 2x solo, duo and trio, with wipes every Wednesday and Saturday.",
-    tools: [],
+    tools: ["PHP", "HTML"],
     year: null,
+    live: { status: { "onegrid-server": "Game server", "onegrid-web": "Website" }, invite: "onegrid" },
     links: {
       site: "https://onegridrust.com",
       discord: "https://discord.gg/onegrid",
@@ -891,11 +905,55 @@ const PROJECTS = [
     type: "app",
     status: "live",
     summary: "Founder and operator. A browser-based admin tool for Rust servers: live console, bans, auto-moderation, promo codes and Discord logs.",
-    tools: [],
+    tools: ["JavaScript", "HTML", "CSS", "C#"],
     year: null,
-    links: { site: "https://autoturret.xyz", discord: "https://discord.gg/dH9k3FnREH" }
+    links: { site: "https://autoturret.xyz", discord: "https://discord.gg/dH9k3FnREH" },
+    live: { bans: true, status: { autoturret: "Website" }, invite: "dH9k3FnREH" }
+  },
+
+  // side: true puts a project under "Side projects"
+  {
+    id: "discord-privacy-shield",
+    name: "Discord Privacy Shield",
+    type: "app",
+    status: "released",
+    side: true,
+    summary: "A Windows app that blurs chosen windows and sensitive data in a mirror window you share on Discord, Zoom, OBS or Teams, while your own screen stays clear.",
+    tools: ["C#", "JavaScript", "HTML", "CSS"],
+    year: 2026,
+    links: { repo: "https://github.com/sn1prust/DiscordPrivacyShield" }
+  },
+  {
+    id: "watchexchange-alerts",
+    name: "WatchExchangeAlerts",
+    type: "service",
+    status: "released",
+    side: true,
+    summary: "Sends a phone notification when a new r/Watchexchange post matches the watch you are hunting, by reference number or keywords. One Python file, no dependencies.",
+    tools: ["Python"],
+    year: 2026,
+    links: { repo: "https://github.com/sn1prust/WatchExchangeAlerts" }
+  },
+  {
+    id: "gitea-mirror",
+    name: "gitea-mirror",
+    type: "cli",
+    status: "released",
+    side: true,
+    summary: "Sets up push mirrors from a self-hosted Gitea to GitHub, so work done there shows on the GitHub contribution graph.",
+    tools: ["JavaScript"],
+    year: 2026,
+    links: { repo: "https://github.com/sn1prust/Sn1p.win/tree/main/tools/gitea-mirror" }
   }
 ];
+
+// Public endpoints the page reads for live numbers. Each project's `live` field says which apply to it.
+const LIVE_SOURCES = {
+  status: "/status.json",
+  bans: "https://autoturret.xyz/api/public/stats",
+  discordUser: "1296901439280517195",
+  github: "sn1prust"
+};
 
 // type: website (opens a link) | account (a handle: copy: true adds a Copy button, href links to the profile)
 const CONTACT = [
@@ -921,7 +979,7 @@ const CONTACT = [
   const isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || "");
 
   const TYPES = {
-    developer: { label: "Developer", hue: "indigo", glyph: "person" },
+    developer: { label: "Person",    hue: "indigo", glyph: "person" },
     website:   { label: "Website",   hue: "teal",   glyph: "window" },
     cli:       { label: "CLI tool",  hue: "violet", glyph: "prompt" },
     service:   { label: "Service",   hue: "gold",   glyph: "server" },
@@ -935,7 +993,8 @@ const CONTACT = [
     live:     { label: "Live",        intent: "success", order: 0 },
     building: { label: "In progress", intent: "primary", order: 1 },
     sample:   { label: "Sample",      intent: "warning", order: 2 },
-    archived: { label: "Archived",    intent: "none",    order: 3 }
+    archived: { label: "Archived",    intent: "none",    order: 3 },
+    released: { label: "Released",    intent: "success", order: 1 }
   };
   const LINK_LABELS = { site: "Site", repo: "Repository", docs: "Docs", demo: "Demo", discord: "Discord", tiktok: "TikTok", instagram: "Instagram" };
   const TABS = ["overview", "projects", "links"];
@@ -1007,13 +1066,15 @@ const CONTACT = [
   function renderProps() {
     const rows = [
       ["Handle", `<span class="mono">${esc(PROFILE.handle)}</span>`, ""],
-      ["Role", esc(PROFILE.role), ""]
+      ["Role", esc(PROFILE.role), ""],
+      ["Discord status", `<span id="p-pres" class="meta">Checking</span>`, ""]
     ];
     CONTACT.forEach((c, i) => {
       const val = c.href ? xl(c.href, c.value) : `<span class="mono" data-copy-src="${i}">${esc(c.value)}</span>`;
       const act = c.copy ? `<button class="ibtn ibtn-sm" type="button" data-copy="${i}" aria-label="Copy ${esc(c.label)} username" title="Copy">${ico("copy")}</button>` : "";
       rows.push([esc(c.label), val, act]);
     });
+    rows.push(["Contributions", `<a class="xl" id="p-gh" href="https://github.com/${esc(LIVE_SOURCES.github)}" target="_blank" rel="noopener"><span>On GitHub</span>${ico("ext")}</a>`, ""]);
     $("#plist").innerHTML = rows.map(([k, v, a]) => `<div class="prow"><dt>${k}</dt><dd>${v}</dd><dd class="pact">${a}</dd></div>`).join("");
     $("#props-n").textContent = rows.length;
     const links = PROJECTS.length + CONTACT.length;
@@ -1068,166 +1129,158 @@ const CONTACT = [
   const tOrder = (k) => { const i = TYPE_ORDER.indexOf(k); return i < 0 ? 99 : i; };
 
   /* ---------------- Link graph ---------------- */
-  const graphEl = $("#graph"), gsvg = $("#graph-svg");
-  let gNodes = [], gEdges = [], gW = 0, gH = 0, gHover = null;
-  const gPos = new Map(), gCustom = new Map();
+  // Three columns: Sn1p -> projects (main, then side) -> the languages each one uses.
+  const graphEl = $("#graph"), gcv = $("#gcv"), gsvg = $("#graph-svg");
+  const HEX = '<svg class="hex" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .9 14.2 4.5v7L8 15.1 1.8 11.5v-7z"/></svg>';
+  const langId = (t) => "lang-" + t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  let gNodes = [], gEdges = [], gHover = null;
 
   function buildGraph() {
-    gNodes = [{ id: "__self", self: true, label: PROFILE.name }];
+    gNodes = [{ id: "__self", col: 0, self: true }];
     gEdges = [];
-    PROJECTS.forEach((p) => {
-      gNodes.push({ id: p.id, label: p.name, type: p.type, group: 0, sample: p.status === "sample", desc: `${typeOf(p.type).label}, ${statusOf(p.status).label}` });
-      gEdges.push({ to: p.id, labels: ["maintains"], sample: p.status === "sample" });
+    const langs = [];
+    const main = PROJECTS.filter((p) => !p.side), side = PROJECTS.filter((p) => p.side);
+    [...main, ...side].forEach((p) => {
+      gNodes.push({ id: p.id, col: 1, p, side: !!p.side });
+      gEdges.push({ from: "__self", to: p.id, side: !!p.side });
+      (p.tools || []).forEach((t) => {
+        if (!langs.includes(t)) langs.push(t);
+        gEdges.push({ from: p.id, to: langId(t) });
+      });
     });
-    CONTACT.forEach((c, i) => {
-      const merged = c.href && projectForUrl(c.href);
-      if (merged) {
-        const e = gEdges.find((x) => x.to === merged.id);
-        if (e) e.labels.push(c.type === "account" ? "account" : "site");
-        return;
-      }
-      gNodes.push({ id: contactId(i), label: c.type === "account" ? c.label : c.value, type: contactType(c), group: 1, desc: c.type === "account" ? `Account, ${c.value}` : "Website" });
-      gEdges.push({ to: contactId(i), labels: [c.type === "account" ? "account" : "site"] });
-    });
-    $$(".gnode", graphEl).forEach((n) => n.remove());
+    const used = (t) => PROJECTS.filter((p) => (p.tools || []).includes(t)).length;
+    langs.sort((a, b) => used(b) - used(a) || a.localeCompare(b));
+    langs.forEach((t) => gNodes.push({ id: langId(t), col: 2, lang: t }));
+
+    gcv.querySelectorAll(".gnode, .gcol-h").forEach((n) => n.remove());
     gNodes.forEach((n) => {
       const el = document.createElement(n.self ? "div" : "button");
-      el.className = "gnode" + (n.self ? " self" : ` h-${typeOf(n.type).hue}`) + (n.sample ? " is-sample" : "");
       el.dataset.id = n.id;
       if (n.self) {
-        el.innerHTML = `<span class="gd" aria-hidden="true"></span><span class="gl">${esc(n.label)}</span>`;
-        el.title = "This object";
-      } else {
+        el.className = "gnode self";
+        el.innerHTML = `<span class="av" aria-hidden="true"></span><span class="gt"><span class="gl">${esc(PROFILE.name)}</span><span class="gs">${esc(PROFILE.role)}</span></span>`;
+      } else if (n.p) {
+        const p = n.p, s = statusOf(p.status);
         el.type = "button";
-        el.setAttribute("aria-label", `${n.label}, ${n.desc}. Open details`);
-        el.innerHTML = `<span class="gd" aria-hidden="true"><svg viewBox="0 0 16 16">${GLYPH[typeOf(n.type).glyph]}</svg></span><span class="gl">${esc(n.label)}</span>`;
+        el.className = "gnode" + (n.side ? " side" : "");
+        el.setAttribute("aria-label", `${p.name}, ${typeOf(p.type).label}, ${s.label}${n.side ? ", side project" : ""}. Open details`);
+        el.innerHTML = `${tIcon(p.type)}<span class="gt"><span class="gl">${esc(p.name)}</span><span class="gs">${esc(typeOf(p.type).label)} · <span class="st int-${s.intent}">${esc(s.label)}</span></span></span>`;
+      } else {
+        const n2 = used(n.lang);
+        el.type = "button";
+        el.className = "gnode lang";
+        el.setAttribute("aria-label", `${n.lang}, used in ${plural(n2, "project", "projects")}. Show them`);
+        el.dataset.tool = n.lang;
+        el.innerHTML = `${HEX}<span class="gl">${esc(n.lang)}</span>`;
       }
-      graphEl.appendChild(el);
+      gcv.appendChild(el);
+      n.el = el;
     });
-    const types = [...new Set(gNodes.filter((n) => !n.self).map((n) => n.type))].sort((a, b) => tOrder(a) - tOrder(b));
+    if (side.length) {
+      const h = document.createElement("div");
+      h.className = "gcol-h";
+      h.id = "gside-h";
+      h.textContent = "Side projects";
+      gcv.appendChild(h);
+    }
+    const types = [...new Set(PROJECTS.map((p) => p.type))].sort((a, b) => tOrder(a) - tOrder(b));
     $("#graph-legend").innerHTML = types.map((t) => `<span class="lg">${tIcon(t, "xs")}${esc(typeOf(t).label)}</span>`).join("") +
-      (gNodes.some((n) => n.sample) ? `<span class="lg"><span class="lg-sample" aria-hidden="true"></span>Sample</span>` : "") +
-      `<span class="hint">Drag to rearrange</span>`;
-    const nLinks = gEdges.reduce((n, e) => n + e.labels.length, 0);
-    $("#graph-meta").textContent = `${plural(gNodes.length, "object", "objects")} \u00b7 ${plural(nLinks, "link", "links")}`;
+      (langs.length ? `<span class="lg">${HEX}Language</span>` : "") +
+      (side.length ? `<span class="lg"><span class="lg-side" aria-hidden="true"></span>Side project</span>` : "") +
+      `<span class="hint">Select a language to see where it is used</span>`;
+    $("#graph-meta").textContent = `${plural(gNodes.length, "object", "objects")} · ${plural(gEdges.length, "link", "links")}`;
   }
 
+  const G = { pad: 16, rowH: 46, gap: 10, langH: 32, langGap: 8 };
   function layoutGraph() {
-    const w = graphEl.clientWidth, h = graphEl.clientHeight;
-    if (!w || !h) return;
-    gW = w; gH = h;
-    const cx = w * 0.46, cy = h / 2 - 6;
-    const rx = clamp(w - cx - 84, 80, 330), ry = clamp(h / 2 - 54, 60, 118);
-    const right = gNodes.filter((n) => !n.self && n.group === 0);
-    const left = gNodes.filter((n) => !n.self && n.group === 1);
-    const place = (list, center, span, rxs) => {
-      const k = list.length;
-      list.forEach((n, i) => {
-        const a = ((k === 1 ? center : center - span / 2 + (span * i) / (k - 1)) * Math.PI) / 180;
-        gPos.set(n.id, { x: cx + rxs * Math.cos(a), y: cy + ry * Math.sin(a) });
-      });
-    };
-    if (right.length > 7) {
-      const all = gNodes.filter((n) => !n.self), step = 360 / all.length;
-      all.forEach((n, i) => { const a = ((-90 + i * step) * Math.PI) / 180; gPos.set(n.id, { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) }); });
-    } else {
-      place(right, 0, Math.min(156, Math.max(0, right.length - 1) * 50), rx);
-      place(left, 180, Math.min(120, Math.max(0, left.length - 1) * 60), Math.min(cx - 56, rx * 0.72));
-    }
-    gPos.set("__self", { x: cx, y: cy });
-    gCustom.forEach((v, id) => gPos.set(id, { x: v.fx * w, y: v.fy * h }));
-    placeNodes();
-    drawEdges();
-  }
-
-  function placeNode(el) {
-    const p = gPos.get(el.dataset.id), s = gPos.get("__self");
-    if (!p) return;
-    el.style.left = p.x.toFixed(1) + "px";
-    el.style.top = p.y.toFixed(1) + "px";
-    if (s && !el.classList.contains("self")) {
-      const dx = p.x - s.x, dy = p.y - s.y, L = Math.hypot(dx, dy) || 1;
-      el.classList.toggle("lab-top", dy < 0 && Math.abs(dy / L) > 0.6);
-    }
-  }
-  function placeNodes() { $$(".gnode", graphEl).forEach(placeNode); }
-
-  function drawEdges() {
-    const s = gPos.get("__self");
-    if (!s || !gW) return;
-    const showLabels = gW >= 420;
-    let out = '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1 10 5 0 9z" class="ah"/></marker>' +
-      '<marker id="ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1 10 5 0 9z" class="ah-hl"/></marker></defs>';
-    gEdges.forEach((e) => {
-      const t = gPos.get(e.to);
-      if (!t) return;
-      const dx = t.x - s.x, dy = t.y - s.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
-      const r0 = 26 / Math.max(Math.abs(ux), Math.abs(uy), 0.0001);
-      const start = Math.min(r0, 26 * 1.42);
-      const x1 = s.x + ux * start, y1 = s.y + uy * start, x2 = t.x - ux * 22, y2 = t.y - uy * 22;
-      const mx = x1 + (x2 - x1) * 0.56, my = y1 + (y2 - y1) * 0.56;
-      const hl = gHover === e.to ? " hl" : "";
-      out += `<g class="edge${e.sample ? " is-sample" : ""}${hl}" data-to="${esc(e.to)}">`;
-      out += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" marker-end="url(#${hl ? "ah-hl" : "ah"})"/>`;
-      if (showLabels && L > 120) out += `<g transform="translate(${mx.toFixed(1)} ${my.toFixed(1)})"><rect class="eb" x="-28" y="-8" width="56" height="16" rx="2"/><text text-anchor="middle" y="3.8">${esc(e.labels.join(" \u00b7 "))}</text></g>`;
-      out += "</g>";
+    const avail = graphEl.clientWidth;
+    if (!avail) return;
+    const W = Math.max(avail, 640);
+    const w0 = 140, w1 = clamp(W * 0.28, 206, 240), w2 = 130;
+    const x0 = G.pad, x2 = W - G.pad - w2, x1 = Math.round((x0 + w0 + x2) / 2 - w1 / 2);
+    // column 1: main projects, a header, then side projects
+    let y = G.pad, sawSide = false;
+    const col1 = gNodes.filter((n) => n.col === 1);
+    col1.forEach((n) => {
+      if (n.side && !sawSide) {
+        sawSide = true;
+        y += 6;
+        const h = $("#gside-h");
+        if (h) { h.style.left = x1 + "px"; h.style.top = y + "px"; }
+        y += 22;
+      }
+      Object.assign(n, { x: x1, y, w: w1, h: G.rowH });
+      y += G.rowH + G.gap;
     });
-    gsvg.setAttribute("viewBox", `0 0 ${gW} ${gH}`);
+    const H = Math.max(y - G.gap + G.pad, 200);
+    // column 0: Sn1p, centred on the main projects
+    const mains = col1.filter((n) => !n.side);
+    const mid = mains.length ? (mains[0].y + mains[mains.length - 1].y + G.rowH) / 2 : H / 2;
+    Object.assign(gNodes[0], { x: x0, y: Math.round(mid - 26), w: w0, h: 52 });
+    // column 2: languages, centred on the whole height
+    const langs = gNodes.filter((n) => n.col === 2);
+    const lh = langs.length * G.langH + Math.max(0, langs.length - 1) * G.langGap;
+    let ly = Math.max(G.pad, Math.round((H - lh) / 2));
+    langs.forEach((n) => { Object.assign(n, { x: x2, y: ly, w: w2, h: G.langH }); ly += G.langH + G.langGap; });
+
+    gcv.style.width = W + "px";
+    gcv.style.height = H + "px";
+    gNodes.forEach((n) => Object.assign(n.el.style, { left: n.x + "px", top: n.y + "px", width: n.w + "px", height: n.h + "px" }));
+    drawEdges(W, H);
+  }
+
+  function drawEdges(W, H) {
+    if (W == null) { W = gcv.offsetWidth; H = gcv.offsetHeight; }
+    if (!W) return;
+    const byId = new Map(gNodes.map((n) => [n.id, n]));
+    let out = '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1 10 5 0 9z" class="ah"/></marker>' +
+      '<marker id="ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1 10 5 0 9z" class="ah-hl"/></marker></defs>';
+    gEdges.forEach((e, i) => {
+      const a = byId.get(e.from), b = byId.get(e.to);
+      if (!a || !b) return;
+      const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x - 1, y2 = b.y + b.h / 2, k = (x2 - x1) * 0.5;
+      const on = edgeOn(e);
+      e.i = i;
+      out += `<path class="edge${e.side ? " side" : ""}${on ? " hl" : ""}" data-i="${i}" d="M${x1} ${y1}C${x1 + k} ${y1} ${x2 - k} ${y2} ${x2} ${y2}" marker-end="url(#${on ? "ah-hl" : "ah"})"/>`;
+    });
+    gsvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     gsvg.innerHTML = out;
-    $$("g > text", gsvg).forEach((tx) => {
-      const r = tx.previousElementSibling;
-      let w = 0;
-      try { w = tx.getComputedTextLength(); } catch (err) { w = 0; }
-      if (w) { r.setAttribute("x", (-(w + 10) / 2).toFixed(1)); r.setAttribute("width", (w + 10).toFixed(1)); }
-    });
   }
+
+  // What a hovered node lights up: its own edges, plus Sn1p's edge into a project
+  // when the hovered node is a language that project uses.
+  function relatedTo(id) {
+    const ids = new Set([id]), edges = new Set();
+    if (!id || id === "__self") return { ids, edges };
+    gEdges.forEach((e) => {
+      if (e.from === id || e.to === id) { edges.add(e); ids.add(e.from); ids.add(e.to); }
+    });
+    if (id.startsWith("lang-")) gEdges.forEach((e) => { if (e.from === "__self" && ids.has(e.to)) { edges.add(e); } });
+    return { ids, edges };
+  }
+  let gRel = relatedTo(null);
+  const edgeOn = (e) => gHover != null && gRel.edges.has(e);
 
   function setHover(id) {
     gHover = id;
+    gRel = relatedTo(id);
     graphEl.classList.toggle("has-hl", !!id);
-    $$(".gnode", graphEl).forEach((n) => n.classList.toggle("hl", n.dataset.id === id));
-    $$(".edge", gsvg).forEach((e) => {
-      const on = e.dataset.to === id;
-      e.classList.toggle("hl", on);
-      const ln = e.querySelector("line");
-      if (ln) ln.setAttribute("marker-end", `url(#${on ? "ah-hl" : "ah"})`);
+    gNodes.forEach((n) => n.el.classList.toggle("hl", !!id && gRel.ids.has(n.id)));
+    $$(".edge", gsvg).forEach((p) => {
+      const on = !!id && gRel.edges.has(gEdges[+p.dataset.i]);
+      p.classList.toggle("hl", on);
+      p.setAttribute("marker-end", `url(#${on ? "ah-hl" : "ah"})`);
     });
   }
-  graphEl.addEventListener("pointerover", (e) => { const n = e.target.closest(".gnode:not(.self)"); if (n && !drag) setHover(n.dataset.id); });
-  graphEl.addEventListener("pointerout", (e) => { const n = e.target.closest(".gnode"); if (n && !n.contains(e.relatedTarget) && !drag) setHover(null); });
-  graphEl.addEventListener("focusin", (e) => { const n = e.target.closest(".gnode:not(.self)"); if (n) setHover(n.dataset.id); });
-  graphEl.addEventListener("focusout", () => setHover(null));
-
-  let drag = null, suppressClick = false;
-  graphEl.addEventListener("pointerdown", (e) => {
-    const n = e.target.closest(".gnode");
-    if (!n || e.pointerType === "touch" || e.button !== 0) return;
-    const p = gPos.get(n.dataset.id);
-    if (!p) return;
-    drag = { el: n, id: n.dataset.id, sx: e.clientX, sy: e.clientY, ox: p.x, oy: p.y, moved: false, pid: e.pointerId };
+  gcv.addEventListener("pointerover", (e) => { const n = e.target.closest(".gnode:not(.self)"); if (n) setHover(n.dataset.id); });
+  gcv.addEventListener("pointerout", (e) => { const n = e.target.closest(".gnode"); if (n && !n.contains(e.relatedTarget)) setHover(null); });
+  gcv.addEventListener("focusin", (e) => { const n = e.target.closest(".gnode:not(.self)"); if (n) setHover(n.dataset.id); });
+  gcv.addEventListener("focusout", () => setHover(null));
+  gcv.addEventListener("click", (e) => {
+    const n = e.target.closest(".gnode:not(.self):not(.lang)");
+    if (n) openObject(n.dataset.id, { from: n });
+    // language nodes carry data-tool, which the global handler turns into a table filter
   });
-  window.addEventListener("pointermove", (e) => {
-    if (!drag || e.pointerId !== drag.pid) return;
-    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
-    if (!drag.moved && Math.hypot(dx, dy) < 4) return;
-    if (!drag.moved) { drag.moved = true; graphEl.classList.add("dragging"); try { drag.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
-    const x = clamp(drag.ox + dx, 28, gW - 28), y = clamp(drag.oy + dy, 26, gH - 40);
-    gPos.set(drag.id, { x, y });
-    gCustom.set(drag.id, { fx: x / gW, fy: y / gH });
-    if (drag.id === "__self") placeNodes(); else placeNode(drag.el);
-    drawEdges();
-    $("#graph-reset").disabled = false;
-  });
-  const endDrag = () => { if (!drag) return; if (drag.moved) suppressClick = true; graphEl.classList.remove("dragging"); drag = null; setTimeout(() => { suppressClick = false; }, 0); };
-  window.addEventListener("pointerup", endDrag);
-  window.addEventListener("pointercancel", endDrag);
-  graphEl.addEventListener("click", (e) => {
-    const n = e.target.closest(".gnode:not(.self)");
-    if (!n) return;
-    if (suppressClick) { e.preventDefault(); return; }
-    openObject(n.dataset.id, { from: n });
-  });
-  $("#graph-reset").addEventListener("click", () => { gCustom.clear(); layoutGraph(); $("#graph-reset").disabled = true; });
 
   /* ---------------- Projects table ---------------- */
   const state = { q: "", type: new Set(), status: new Set(), sort: { key: "status", dir: 1 } };
@@ -1251,6 +1304,7 @@ const CONTACT = [
         if (a.year == null && b.year != null) return 1;
         if (b.year == null && a.year != null) return -1;
       }
+      if (key === "status" && !!a.side !== !!b.side) return a.side ? 1 : -1;
       return (dir * CMP[key](a, b)) || CMP.name(a, b);
     });
   }
@@ -1277,7 +1331,7 @@ const CONTACT = [
       const links = linkEntries(p);
       return `<tr data-id="${esc(p.id)}"${p.id === sel ? ' class="is-sel"' : ""}>
         <td class="c-name"><div class="nm">${tIcon(p.type)}<button class="nm-btn" type="button" data-open="${esc(p.id)}">${esc(p.name)}</button></div></td>
-        <td class="c-type"${p.year ? ` data-year="${esc(p.year)}"` : ""}>${esc(typeOf(p.type).label)}</td>
+        <td class="c-type"${p.year ? ` data-year="${esc(p.year)}"` : ""}>${esc(typeOf(p.type).label)}${p.side ? " \u00b7 Side project" : ""}</td>
         <td class="c-status">${sTag(p.status)}</td>
         <td class="c-tools${p.tools && p.tools.length ? "" : " is-nil"}">${toolTags(p.tools)}</td>
         <td class="c-year r num${p.year ? "" : " is-nil"}">${p.year ? esc(p.year) : NIL}</td>
@@ -1378,25 +1432,27 @@ const CONTACT = [
   function renderDrawer(o) {
     const sec = (title, body) => `<section class="dr-sec"><h3>${title}</h3>${body}</section>`;
     const kv = (rows) => `<dl class="kv">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`;
-    const selfChip = `<span class="selfchip"><span class="av" aria-hidden="true"></span>${esc(PROFILE.name)}</span><span class="meta">Developer</span>`;
+    const selfChip = `<span class="selfchip"><span class="av" aria-hidden="true"></span>${esc(PROFILE.name)}</span><span class="meta">${esc(PROFILE.role)}</span>`;
     let kind, title, tags, body, foot = "";
     if (o.kind === "project") {
       const p = o.p, t = typeOf(p.type), links = linkEntries(p);
-      kind = `${tIcon(p.type)}<span>${esc(t.label)} \u00b7 Project</span>`;
+      kind = `${tIcon(p.type)}<span>${esc(t.label)} \u00b7 ${p.side ? "Side project" : "Project"}</span>`;
       title = p.name;
       tags = sTag(p.status) + (p.year ? `<span class="tag tag-o num">${esc(p.year)}</span>` : "");
       body = sec("Summary", `<p>${p.summary ? esc(p.summary) : NIL}</p>`) +
+        (p.live ? sec("Right now", `<div id="dr-live" data-id="${esc(p.id)}">${liveBlock(p)}</div>`) : "") +
         sec("Properties", kv([
           ["Type", esc(t.label)],
           ["Status", sTag(p.status)],
-          ["Year", p.year ? `<span class="num">${esc(p.year)}</span>` : NIL],
-          ["Tools", toolTags(p.tools)],
+          ...(p.year ? [["Year", `<span class="num">${esc(p.year)}</span>`]] : []),
+          ...(p.tools && p.tools.length ? [["Languages", toolTags(p.tools)]] : []),
           ...(links.length ? links.map(([k, u]) => [esc(LINK_LABELS[k] || cap(k)), xl(u)]) : [["Link", NIL]]),
           ["Primary key", `<span class="mono">${esc(p.id)}</span>`]
         ])) +
         sec("Links", `<div class="lrow"><span class="lt">Maintained by</span>${selfChip}</div>` +
           (CONTACT.some((c) => c.href && hostOf(c.href) === (links[0] && hostOf(links[0][1]))) ? `<div class="lrow"><span class="lt">Personal site of</span>${selfChip}</div>` : ""));
-      if (links.length) foot = links.map(([k, u], i) => `<a class="btn${i ? "" : " btn-primary"}" href="${esc(u)}" target="_blank" rel="noopener">Open ${esc(hostOf(u))}${ico("ext")}</a>`).join("");
+      if (links.length) foot = links.map(([k, u], i) => `<a class="btn${i ? "" : " btn-primary"}" href="${esc(u)}" target="_blank" rel="noopener">Open ${esc(LINK_LABELS[k] === "Site" ? hostOf(u) : LINK_LABELS[k] || hostOf(u))}${ico("ext")}</a>`).join("");
+      foot += `<button class="btn" type="button" data-copylink="${esc(p.id)}">${ico("link")}<span>Copy link</span></button>`;
     } else {
       const c = o.c, i = o.i, tk = contactType(c);
       kind = `${tIcon(tk)}<span>${esc(typeOf(tk).label)}</span>`;
@@ -1495,6 +1551,67 @@ const CONTACT = [
     if (n) { e.preventDefault(); setTab(n, { focus: true }); }
   });
 
+  /* ---------------- Live numbers ---------------- */
+  // Public counts only. Nothing here animates or invents a value: a missing source shows as unavailable.
+  const LIVE = { status: null, inv: {}, bans: null, pres: null, gh: null, at: 0, tried: false };
+  const num = (n) => Number(n).toLocaleString("en-US");
+  const SVC = { ok: ["Up", "success"], degraded: ["Degraded", "warning"], down: ["Down", "danger"] };
+  const PRES = { online: ["Online", "success"], idle: ["Idle", "warning"], dnd: ["Do not disturb", "danger"], offline: ["Offline", "none"] };
+  const getJSON = (u) => fetch(u, { cache: "no-store" }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))));
+
+  function liveRows(p) {
+    const L = p.live || {}, rows = [];
+    if (L.status && LIVE.status) Object.entries(L.status).forEach(([id, label]) => {
+      const s = LIVE.status.services.find((x) => x.id === id);
+      if (!s) return;
+      const st = SVC[s.state] || ["Unknown", "none"];
+      const extra = [s.detail && s.detail !== "Responding" ? s.detail : "", typeof s.uptime === "number" ? `${s.uptime}% uptime` : ""].filter(Boolean).join(" \u00b7 ");
+      rows.push([label, `<span class="tag int-${st[1]}">${st[0]}</span>${extra ? `<span class="meta">${esc(extra)}</span>` : ""}`]);
+    });
+    if (L.bans && typeof LIVE.bans === "number") rows.push(["Active bans", `<span class="num">${num(LIVE.bans)}</span>`]);
+    const m = L.invite && LIVE.inv[L.invite];
+    if (m) rows.push(["Discord", `<span class="num">${num(m.all)}</span> members \u00b7 <span class="num">${num(m.on)}</span> online`]);
+    return rows;
+  }
+  const liveAt = () => LIVE.at ? new Date(LIVE.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+  function liveBlock(p) {
+    const rows = liveRows(p);
+    if (!rows.length) return `<p class="meta">${LIVE.tried ? "Not available right now." : "Checking\u2026"}</p>`;
+    return `<dl class="kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd><span class="nw">${v}</span></dd>`).join("")}</dl><p class="meta dr-live-at">Updated ${liveAt()}</p>`;
+  }
+
+  function renderLive() {
+    const withLive = PROJECTS.filter((p) => p.live);
+    $("#now-list").innerHTML = withLive.map((p) => {
+      const rows = liveRows(p);
+      const v = rows.length ? rows.map(([k, h]) => `<span class="nw"><span class="nk">${esc(k)}</span>${h}</span>`).join("") : `<span class="meta">${LIVE.tried ? "Not available" : "Checking"}</span>`;
+      return `<dt><button class="linkbtn" type="button" data-open="${esc(p.id)}">${esc(p.name)}</button></dt><dd>${v}</dd>`;
+    }).join("");
+    $("#now-meta").textContent = LIVE.at ? `Updated ${liveAt()} \u00b7 refreshes every minute` : "Checking";
+    const pr = PRES[LIVE.pres];
+    $("#p-pres").outerHTML = pr ? `<span id="p-pres" class="tag int-${pr[1]}">${pr[0]}</span>` : `<span id="p-pres" class="meta">${LIVE.tried ? "Unavailable" : "Checking"}</span>`;
+    if (typeof LIVE.gh === "number") $("#p-gh span").textContent = `${num(LIVE.gh)} in the last year`;
+    const dl = $("#dr-live");
+    if (dl && !drawer.hidden) { const p = PROJECTS.find((x) => x.id === dl.dataset.id); if (p) dl.innerHTML = liveBlock(p); }
+  }
+
+  async function pollLive() {
+    const S = LIVE_SOURCES;
+    const invites = [...new Set(PROJECTS.map((p) => p.live && p.live.invite).filter(Boolean))];
+    await Promise.allSettled([
+      getJSON(S.status).then((j) => { if (j && Array.isArray(j.services)) LIVE.status = j; }),
+      getJSON(S.bans).then((j) => { if (typeof j.activeBans === "number") LIVE.bans = j.activeBans; }),
+      getJSON(`https://api.lanyard.rest/v1/users/${S.discordUser}`).then((j) => { if (j && j.success) LIVE.pres = j.data.discord_status; }),
+      ...invites.map((c) => getJSON(`https://discord.com/api/v10/invites/${encodeURIComponent(c)}?with_counts=true`).then((j) => {
+        if (typeof j.approximate_member_count === "number") LIVE.inv[c] = { all: j.approximate_member_count, on: j.approximate_presence_count || 0 };
+      })),
+      LIVE.gh == null ? getJSON(`https://github-contributions-api.jogruber.de/v4/${S.github}?y=last`).then((j) => { if (j && j.total && typeof j.total.lastYear === "number") LIVE.gh = j.total.lastYear; }) : null
+    ]);
+    LIVE.tried = true;
+    LIVE.at = Date.now();
+    renderLive();
+  }
+
   /* ---------------- Copy and toast ---------------- */
   let toastTimer = 0;
   function toast(msg, ok) {
@@ -1533,10 +1650,27 @@ const CONTACT = [
     } catch (err) { fail(); }
   }
 
+  function copyLink(id, btn) {
+    const p = PROJECTS.find((x) => x.id === id);
+    if (!p) return;
+    const url = location.origin + location.pathname + "#" + id;
+    const fail = () => toast(`Link: ${url}`, false);
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("no clipboard");
+      navigator.clipboard.writeText(url).then(() => {
+        toast(`Copied the link to ${p.name}`, true);
+        const svg = btn && btn.querySelector("svg");
+        if (svg) { svg.innerHTML = ICON.check; clearTimeout(btn._t); btn._t = setTimeout(() => { svg.innerHTML = ICON.link; }, 1600); }
+      }, fail);
+    } catch (err) { fail(); }
+  }
+
   /* ---------------- Global click delegation ---------------- */
   document.addEventListener("click", (e) => {
     const cp = e.target.closest("[data-copy]");
     if (cp) { copyContact(+cp.dataset.copy, cp); return; }
+    const cl = e.target.closest("[data-copylink]");
+    if (cl) { copyLink(cl.dataset.copylink, cl); return; }
     const op = e.target.closest("[data-open]");
     if (op) { openObject(op.dataset.open, { from: op }); return; }
     const go = e.target.closest("[data-go]");
@@ -1575,7 +1709,7 @@ const CONTACT = [
   const omni = $("#omni"), oin = $("#omni-input"), olist = $("#omni-list");
   let oResults = [], oActive = 0, oReturn = null;
   const INDEX = [];
-  INDEX.push({ g: "Objects", title: PROFILE.name, sub: "Developer", icon: '<span class="av" aria-hidden="true"></span>', act: "Overview", hay: `${PROFILE.name} ${PROFILE.handle} developer ${PROFILE.role}`, run: () => setTab("overview", { reveal: true }) });
+  INDEX.push({ g: "Objects", title: PROFILE.name, sub: `Person \u00b7 ${PROFILE.role}`, icon: '<span class="av" aria-hidden="true"></span>', act: "Overview", hay: `${PROFILE.name} ${PROFILE.handle} developer ${PROFILE.role}`, run: () => setTab("overview", { reveal: true }) });
   PROJECTS.forEach((p) => INDEX.push({ g: "Objects", title: p.name, sub: `${typeOf(p.type).label} \u00b7 ${statusOf(p.status).label}`, icon: tIcon(p.type), act: "Open", hay: hayOf(p), run: () => { setTab("projects"); openObject(p.id); } }));
   CONTACT.forEach((c, i) => {
     if (c.copy) INDEX.push({ g: "Contact", title: `${c.label}: ${c.value}`, sub: "Copy username", icon: tIcon(contactType(c)), act: "Copy", hay: `${c.label} ${c.value} contact copy`.toLowerCase(), copy: i });
@@ -1700,7 +1834,10 @@ const CONTACT = [
   layoutGraph();
   if ("ResizeObserver" in window) new ResizeObserver(() => layoutGraph()).observe(graphEl);
   else window.addEventListener("resize", layoutGraph);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawEdges());
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutGraph());
+  renderLive();
+  pollLive();
+  setInterval(() => { if (!document.hidden) pollLive(); }, 60000);
 })();
 </script>
 </body>
