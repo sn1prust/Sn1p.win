@@ -2,7 +2,7 @@
 
 Personal site for **Sn1p**, founder of OneGrid Rust and AutoTurret. Live at [sn1p.win](https://sn1p.win).
 
-One self-contained page laid out like the object view of a data-analysis app: a header with properties, Overview / Projects / Links tabs, a link graph connecting Sn1p to each project and account, a filterable project table, a detail drawer per project, and Ctrl/Cmd+K search. No build step and no dependencies; the only external request is Google Fonts. Light and dark themes follow the system.
+One self-contained page laid out like the object view of a data-analysis app: a header with properties, Overview / Projects / Links tabs, a link graph connecting Sn1p to each project and account, a filterable project table, a detail drawer per project, and Ctrl/Cmd+K search. No build step and no dependencies; the only external request is Google Fonts. Dark theme by default.
 
 Projects and contacts are three constants at the top of the page script: `PROFILE`, `PROJECTS` and `CONTACT`.
 

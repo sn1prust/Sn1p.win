@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -897,10 +897,14 @@ const PROJECTS = [
   }
 ];
 
-// type: website (opens a link) | account (shows a handle with a Copy button)
+// type: website (opens a link) | account (a handle: copy: true adds a Copy button, href links to the profile)
 const CONTACT = [
   { label: "Site", value: "sn1p.win", type: "website", href: "https://sn1p.win" },
-  { label: "Discord", value: "sn1p", type: "account", copy: true }
+  { label: "Discord", value: "sn1prust", type: "account", copy: true },
+  { label: "GitHub", value: "sn1prust", type: "account", href: "https://github.com/sn1prust" },
+  { label: "TikTok", value: "@sn1prust", type: "account", href: "https://www.tiktok.com/@sn1prust" },
+  { label: "Steam", value: "_Sn1p", type: "account", href: "https://steamcommunity.com/id/_Sn1p/" },
+  { label: "Reddit", value: "u/PintoBean2040", type: "account", href: "https://www.reddit.com/user/PintoBean2040/" }
 ];
 
 /* ============================================================
@@ -990,11 +994,13 @@ const CONTACT = [
   function renderHead() {
     $("#kicker").innerHTML = tTag("developer");
     const kp = [["Role", esc(PROFILE.role)]];
-    CONTACT.forEach((c, i) => kp.push([esc(c.label), c.href ? xl(c.href, c.value) : `<span class="mono" data-copy-src="${i}">${esc(c.value)}</span>`]));
+    // The header keeps to the site and copyable handles; profile links live in Properties and the Links tab.
+    const inHead = (c) => c.type !== "account" || c.copy;
+    CONTACT.forEach((c, i) => inHead(c) && kp.push([esc(c.label), c.href ? xl(c.href, c.value) : `<span class="mono" data-copy-src="${i}">${esc(c.value)}</span>`]));
     $("#keyprops").innerHTML = kp.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
     const acts = [];
     CONTACT.forEach((c, i) => { if (c.copy) acts.push(`<button class="btn btn-primary" type="button" data-copy="${i}">${ico("copy")}<span>Copy ${esc(c.label)}</span></button>`); });
-    CONTACT.forEach((c) => { if (c.href) acts.push(`<a class="btn" href="${esc(c.href)}" target="_blank" rel="noopener">Open ${esc(c.value)}${ico("ext")}</a>`); });
+    CONTACT.forEach((c) => { if (c.href && inHead(c)) acts.push(`<a class="btn" href="${esc(c.href)}" target="_blank" rel="noopener">Open ${esc(c.value)}${ico("ext")}</a>`); });
     $("#head-actions").innerHTML = acts.join("");
   }
 
@@ -1339,7 +1345,7 @@ const CONTACT = [
     $("#contact-list").innerHTML = CONTACT.map((c, i) => `<div class="ct">
       ${tIcon(contactType(c), "lg")}
       <div class="ct-id"><div class="ct-l">${esc(c.label)}${c.type === "account" ? " username" : ""}</div><div class="ct-v${c.copy ? " mono" : ""}"${c.copy ? ` data-copy-src="${i}"` : ""}>${esc(c.value)}</div></div>
-      <div class="ct-a">${c.copy ? `<button class="btn" type="button" data-copy="${i}">${ico("copy")}<span>Copy username</span></button>` : ""}${c.href ? `<a class="btn" href="${esc(c.href)}" target="_blank" rel="noopener">Open site${ico("ext")}</a>` : ""}</div>
+      <div class="ct-a">${c.copy ? `<button class="btn" type="button" data-copy="${i}">${ico("copy")}<span>Copy username</span></button>` : ""}${c.href ? `<a class="btn" href="${esc(c.href)}" target="_blank" rel="noopener">${c.type === "account" ? "Open profile" : "Open site"}${ico("ext")}</a>` : ""}</div>
     </div>`).join("");
     const rows = [];
     CONTACT.forEach((c, i) => {
