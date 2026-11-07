@@ -332,12 +332,12 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
 .card-h h2 { margin: 0; font-size: 13px; font-weight: 600; }
 .card-h .push { margin-left: auto; }
 .card-b { padding: 12px; }
-.certs { margin: 0; padding: 0; list-style: none; }
-.cert { display: flex; align-items: center; gap: 12px; padding: 12px; }
-.cert + .cert { border-top: 1px solid var(--line); }
-.cert-i { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--slate); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.cert-n { font-size: 13px; font-weight: 600; line-height: 20px; }
-.cert-o { color: var(--text-2); font-size: 12px; line-height: 16px; }
+.badges { margin: 0; padding: 0; list-style: none; }
+.badge-row { display: flex; align-items: center; gap: 12px; padding: 12px; }
+.badge-row + .badge-row { border-top: 1px solid var(--line); }
+.badge-i { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--slate); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.badge-n { font-size: 13px; font-weight: 600; line-height: 20px; }
+.badge-o { color: var(--text-2); font-size: 12px; line-height: 16px; }
 .card-f { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 36px; margin-top: auto; padding: 6px 12px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 12px; }
 
 .ov { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -738,8 +738,8 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
           </div>
 
           <div class="card wide">
-            <div class="card-h"><h2>Certifications</h2><span class="meta" id="cert-meta"></span></div>
-            <ul class="certs" id="cert-list"></ul>
+            <div class="card-h"><h2>Badges</h2><span class="meta" id="badge-meta"></span></div>
+            <ul class="badges" id="badge-list"></ul>
           </div>
 
           <div class="card wide">
@@ -955,8 +955,8 @@ const LIVE_SOURCES = {
   github: "sn1prust"
 };
 
-const CERTIFICATIONS = [
-  { name: "Generative AI Certified", issuer: "Google Cloud" }
+const BADGES = [
+  { name: "Introduction to Generative AI", issuer: "Google Cloud", kind: "Completion badge" }
 ];
 
 // type: website (opens a link) | account (a handle: copy: true adds a Copy button, href links to the profile)
@@ -1397,12 +1397,12 @@ const CONTACT = [
     if (next) { e.preventDefault(); next.focus(); }
   });
 
-  /* ---------------- Certifications ---------------- */
-  function renderCerts() {
-    $("#cert-meta").textContent = plural(CERTIFICATIONS.length, "certification", "certifications");
-    $("#cert-list").innerHTML = CERTIFICATIONS.map((c) => `<li class="cert">
-      <svg class="cert-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7.5" r="5"/><path d="m7.5 8 1.75 1.5L12.5 6M6.75 11.5 5.5 18l4.5-2.25L14.5 18l-1.25-6.5"/></svg>
-      <div><div class="cert-n">${esc(c.name)}</div><div class="cert-o">${esc(c.issuer)}</div></div>
+  /* ---------------- Badges ---------------- */
+  function renderBadges() {
+    $("#badge-meta").textContent = plural(BADGES.length, "badge", "badges");
+    $("#badge-list").innerHTML = BADGES.map((c) => `<li class="badge-row">
+      <svg class="badge-i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="7.5" r="5"/><path d="m7.5 8 1.75 1.5L12.5 6M6.75 11.5 5.5 18l4.5-2.25L14.5 18l-1.25-6.5"/></svg>
+      <div><div class="badge-n">${esc(c.name)}</div><div class="badge-o">${esc(c.issuer)} · ${esc(c.kind)}</div></div>
     </li>`).join("");
   }
 
@@ -1728,7 +1728,7 @@ const CONTACT = [
     if (c.copy) INDEX.push({ g: "Contact", title: `${c.label}: ${c.value}`, sub: "Copy username", icon: tIcon(contactType(c)), act: "Copy", hay: `${c.label} ${c.value} contact copy`.toLowerCase(), copy: i });
     if (c.href) INDEX.push({ g: "Contact", title: c.value, sub: `${c.label} \u00b7 opens in a new tab`, icon: tIcon(contactType(c)), act: "Open", hay: `${c.label} ${c.value} website site contact`.toLowerCase(), href: c.href });
   });
-  CERTIFICATIONS.forEach((c) => INDEX.push({ g: "Certifications", title: c.name, sub: c.issuer, icon: tIcon("developer"), act: "Overview", hay: `${c.name} ${c.issuer} certification`, run: () => setTab("overview", { reveal: true }) }));
+  BADGES.forEach((c) => INDEX.push({ g: "Badges", title: c.name, sub: `${c.issuer} · ${c.kind}`, icon: tIcon("developer"), act: "Overview", hay: `${c.name} ${c.issuer} ${c.kind}`, run: () => setTab("overview", { reveal: true }) }));
   [["overview", "Overview"], ["projects", "Projects"], ["links", "Links"]].forEach(([id, label]) => INDEX.push({ g: "Views", title: label, sub: "Tab", icon: `<span class="oi-ic">${ico("right")}</span>`, act: "Go", hay: `${label} tab view`.toLowerCase(), run: () => setTab(id, { reveal: true }) }));
 
   const hlText = (text, q) => {
@@ -1840,7 +1840,7 @@ const CONTACT = [
   renderHead();
   renderProps();
   renderHist();
-  renderCerts();
+  renderBadges();
   renderLinked();
   renderLinks();
   buildGraph();
