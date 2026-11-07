@@ -382,6 +382,7 @@ h1 { margin: 6px 0 8px; font-size: 30px; line-height: 1.05; font-weight: 650; fo
 .gnode.self .gl { font-size: 14px; }
 .gnode.lang { gap: 8px; padding: 0 8px; background: var(--panel); }
 .gnode.lang .gl { font-size: 12px; font-weight: 500; }
+.gnode.badge .gl { font-size: 12px; }
 .hex { flex: none; width: 14px; height: 14px; fill: var(--slate); }
 .legend .lg { display: inline-flex; align-items: center; gap: 6px; }
 .lg-side { width: 16px; height: 0; border-top: 1.5px dashed var(--edge); }
@@ -1135,7 +1136,7 @@ const CONTACT = [
   const tOrder = (k) => { const i = TYPE_ORDER.indexOf(k); return i < 0 ? 99 : i; };
 
   /* ---------------- Link graph ---------------- */
-  // Three columns: Sn1p -> projects (main, then side) and badges -> the languages each project uses.
+  // Three columns: Sn1p (with badges beneath) -> projects (main, then side) -> the languages each project uses.
   const graphEl = $("#graph"), gcv = $("#gcv"), gsvg = $("#graph-svg");
   const HEX = '<svg class="hex" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .9 14.2 4.5v7L8 15.1 1.8 11.5v-7z"/></svg>';
   const langId = (t) => "lang-" + t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -1156,8 +1157,8 @@ const CONTACT = [
       });
     });
     BADGES.forEach((b, i) => {
-      gNodes.push({ id: "badge-" + i, col: 1, b });
-      gEdges.push({ from: "__self", to: "badge-" + i });
+      gNodes.push({ id: "badge-" + i, col: 0, b });
+      gEdges.push({ from: "__self", to: "badge-" + i, down: true });
     });
     const used = (t) => PROJECTS.filter((p) => (p.tools || []).includes(t)).length;
     langs.sort((a, b) => used(b) - used(a) || a.localeCompare(b));
@@ -1200,13 +1201,6 @@ const CONTACT = [
       h.textContent = "Side projects";
       gcv.appendChild(h);
     }
-    if (BADGES.length) {
-      const h = document.createElement("div");
-      h.className = "gcol-h";
-      h.id = "gbadge-h";
-      h.textContent = "Badges";
-      gcv.appendChild(h);
-    }
     const types = [...new Set(PROJECTS.map((p) => p.type))].sort((a, b) => tOrder(a) - tOrder(b));
     $("#graph-legend").innerHTML = types.map((t) => `<span class="lg">${tIcon(t, "xs")}${esc(typeOf(t).label)}</span>`).join("") +
       (BADGES.length ? `<span class="lg">${badgeIcon("xs")}Badge</span>` : "") +
@@ -1221,34 +1215,33 @@ const CONTACT = [
     const avail = graphEl.clientWidth;
     if (!avail) return;
     const W = Math.max(avail, 640);
-    const w0 = 140, w1 = clamp(W * 0.28, 206, 240), w2 = 130;
+    const w0 = BADGES.length ? 190 : 140, w1 = clamp(W * 0.28, 206, 240), w2 = 130;
     const x0 = G.pad, x2 = W - G.pad - w2, x1 = Math.round((x0 + w0 + x2) / 2 - w1 / 2);
-    // column 1: main projects, then headed groups for side projects and badges
-    let y = G.pad, sawSide = false, sawBadge = false;
-    const groupHeader = (id) => {
-      y += 6;
-      const h = $(id);
-      if (h) { h.style.left = x1 + "px"; h.style.top = y + "px"; }
-      y += 22;
-    };
+    // column 1: main projects, a header, then side projects
+    let y = G.pad, sawSide = false;
     const col1 = gNodes.filter((n) => n.col === 1);
     col1.forEach((n) => {
       if (n.side && !sawSide) {
         sawSide = true;
-        groupHeader("#gside-h");
-      }
-      if (n.b && !sawBadge) {
-        sawBadge = true;
-        groupHeader("#gbadge-h");
+        y += 6;
+        const h = $("#gside-h");
+        if (h) { h.style.left = x1 + "px"; h.style.top = y + "px"; }
+        y += 22;
       }
       Object.assign(n, { x: x1, y, w: w1, h: G.rowH });
       y += G.rowH + G.gap;
     });
-    const H = Math.max(y - G.gap + G.pad, 200);
-    // column 0: Sn1p, centred on the main projects
-    const mains = col1.filter((n) => !n.side && !n.b);
+    let H = Math.max(y - G.gap + G.pad, 200);
+    // column 0: Sn1p, centred on the main projects, with its badges stacked beneath
+    const mains = col1.filter((n) => !n.side);
     const mid = mains.length ? (mains[0].y + mains[mains.length - 1].y + G.rowH) / 2 : H / 2;
     Object.assign(gNodes[0], { x: x0, y: Math.round(mid - 26), w: w0, h: 52 });
+    let by = gNodes[0].y + 52 + 22;
+    gNodes.filter((n) => n.b).forEach((n) => {
+      Object.assign(n, { x: x0, y: by, w: w0, h: G.rowH });
+      by += G.rowH + G.gap;
+    });
+    H = Math.max(H, by - G.gap + G.pad);
     // column 2: languages, centred on the whole height
     const langs = gNodes.filter((n) => n.col === 2);
     const lh = langs.length * G.langH + Math.max(0, langs.length - 1) * G.langGap;
@@ -1273,6 +1266,12 @@ const CONTACT = [
       const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x - 1, y2 = b.y + b.h / 2, k = (x2 - x1) * 0.5;
       const on = edgeOn(e);
       e.i = i;
+      if (e.down) {
+        // badge edges drop straight down from Sn1p, running behind the badges above
+        const cx = a.x + a.w / 2;
+        out += `<path class="edge${on ? " hl" : ""}" data-i="${i}" d="M${cx} ${a.y + a.h}L${cx} ${b.y - 1}" marker-end="url(#${on ? "ah-hl" : "ah"})"/>`;
+        return;
+      }
       out += `<path class="edge${e.side ? " side" : ""}${on ? " hl" : ""}" data-i="${i}" d="M${x1} ${y1}C${x1 + k} ${y1} ${x2 - k} ${y2} ${x2} ${y2}" marker-end="url(#${on ? "ah-hl" : "ah"})"/>`;
     });
     gsvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
