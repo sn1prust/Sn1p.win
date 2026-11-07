@@ -956,9 +956,9 @@ const LIVE_SOURCES = {
 };
 
 const BADGES = [
-  { name: "Introduction to Generative AI", issuer: "Google Cloud", kind: "Completion badge" },
-  { name: "Introduction to Large Language Models", issuer: "Google Cloud", kind: "Completion badge" },
-  { name: "Applying AI Principles with Google Cloud", issuer: "Google Cloud", kind: "Completion badge" }
+  { name: "Introduction to Generative AI", short: "Intro to Generative AI", issuer: "Google Cloud", kind: "Completion badge" },
+  { name: "Introduction to Large Language Models", short: "Intro to LLMs", issuer: "Google Cloud", kind: "Completion badge" },
+  { name: "Applying AI Principles with Google Cloud", short: "Applying AI Principles", issuer: "Google Cloud", kind: "Completion badge" }
 ];
 
 // type: website (opens a link) | account (a handle: copy: true adds a Copy button, href links to the profile)
@@ -1135,10 +1135,11 @@ const CONTACT = [
   const tOrder = (k) => { const i = TYPE_ORDER.indexOf(k); return i < 0 ? 99 : i; };
 
   /* ---------------- Link graph ---------------- */
-  // Three columns: Sn1p -> projects (main, then side) -> the languages each one uses.
+  // Three columns: Sn1p -> projects (main, then side) and badges -> the languages each project uses.
   const graphEl = $("#graph"), gcv = $("#gcv"), gsvg = $("#graph-svg");
   const HEX = '<svg class="hex" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .9 14.2 4.5v7L8 15.1 1.8 11.5v-7z"/></svg>';
   const langId = (t) => "lang-" + t.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const badgeIcon = (size) => `<span class="ti${size ? " " + size : ""} h-violet" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="6" r="4.75"/><path d="M4.9 10.2 4 15.2l4-2 4 2-.9-5A6 6 0 0 1 8 11.2a6 6 0 0 1-3.1-1z"/></svg></span>`;
   let gNodes = [], gEdges = [], gHover = null;
 
   function buildGraph() {
@@ -1154,6 +1155,10 @@ const CONTACT = [
         gEdges.push({ from: p.id, to: langId(t) });
       });
     });
+    BADGES.forEach((b, i) => {
+      gNodes.push({ id: "badge-" + i, col: 1, b });
+      gEdges.push({ from: "__self", to: "badge-" + i });
+    });
     const used = (t) => PROJECTS.filter((p) => (p.tools || []).includes(t)).length;
     langs.sort((a, b) => used(b) - used(a) || a.localeCompare(b));
     langs.forEach((t) => gNodes.push({ id: langId(t), col: 2, lang: t }));
@@ -1165,6 +1170,12 @@ const CONTACT = [
       if (n.self) {
         el.className = "gnode self";
         el.innerHTML = `<span class="av" aria-hidden="true"></span><span class="gt"><span class="gl">${esc(PROFILE.name)}</span><span class="gs">${esc(PROFILE.role)}</span></span>`;
+      } else if (n.b) {
+        el.type = "button";
+        el.className = "gnode badge";
+        el.title = n.b.name;
+        el.setAttribute("aria-label", `${n.b.name}, ${n.b.issuer}, ${n.b.kind}. Show badges`);
+        el.innerHTML = `${badgeIcon()}<span class="gt"><span class="gl">${esc(n.b.short || n.b.name)}</span><span class="gs">${esc(n.b.issuer)} · Badge</span></span>`;
       } else if (n.p) {
         const p = n.p, s = statusOf(p.status);
         el.type = "button";
@@ -1189,8 +1200,16 @@ const CONTACT = [
       h.textContent = "Side projects";
       gcv.appendChild(h);
     }
+    if (BADGES.length) {
+      const h = document.createElement("div");
+      h.className = "gcol-h";
+      h.id = "gbadge-h";
+      h.textContent = "Badges";
+      gcv.appendChild(h);
+    }
     const types = [...new Set(PROJECTS.map((p) => p.type))].sort((a, b) => tOrder(a) - tOrder(b));
     $("#graph-legend").innerHTML = types.map((t) => `<span class="lg">${tIcon(t, "xs")}${esc(typeOf(t).label)}</span>`).join("") +
+      (BADGES.length ? `<span class="lg">${badgeIcon("xs")}Badge</span>` : "") +
       (langs.length ? `<span class="lg">${HEX}Language</span>` : "") +
       (side.length ? `<span class="lg"><span class="lg-side" aria-hidden="true"></span>Side project</span>` : "") +
       `<span class="hint">Select a language to see where it is used</span>`;
@@ -1204,23 +1223,30 @@ const CONTACT = [
     const W = Math.max(avail, 640);
     const w0 = 140, w1 = clamp(W * 0.28, 206, 240), w2 = 130;
     const x0 = G.pad, x2 = W - G.pad - w2, x1 = Math.round((x0 + w0 + x2) / 2 - w1 / 2);
-    // column 1: main projects, a header, then side projects
-    let y = G.pad, sawSide = false;
+    // column 1: main projects, then headed groups for side projects and badges
+    let y = G.pad, sawSide = false, sawBadge = false;
+    const groupHeader = (id) => {
+      y += 6;
+      const h = $(id);
+      if (h) { h.style.left = x1 + "px"; h.style.top = y + "px"; }
+      y += 22;
+    };
     const col1 = gNodes.filter((n) => n.col === 1);
     col1.forEach((n) => {
       if (n.side && !sawSide) {
         sawSide = true;
-        y += 6;
-        const h = $("#gside-h");
-        if (h) { h.style.left = x1 + "px"; h.style.top = y + "px"; }
-        y += 22;
+        groupHeader("#gside-h");
+      }
+      if (n.b && !sawBadge) {
+        sawBadge = true;
+        groupHeader("#gbadge-h");
       }
       Object.assign(n, { x: x1, y, w: w1, h: G.rowH });
       y += G.rowH + G.gap;
     });
     const H = Math.max(y - G.gap + G.pad, 200);
     // column 0: Sn1p, centred on the main projects
-    const mains = col1.filter((n) => !n.side);
+    const mains = col1.filter((n) => !n.side && !n.b);
     const mid = mains.length ? (mains[0].y + mains[mains.length - 1].y + G.rowH) / 2 : H / 2;
     Object.assign(gNodes[0], { x: x0, y: Math.round(mid - 26), w: w0, h: 52 });
     // column 2: languages, centred on the whole height
@@ -1284,7 +1310,13 @@ const CONTACT = [
   gcv.addEventListener("focusout", () => setHover(null));
   gcv.addEventListener("click", (e) => {
     const n = e.target.closest(".gnode:not(.self):not(.lang)");
-    if (n) openObject(n.dataset.id, { from: n });
+    if (!n) return;
+    if (n.classList.contains("badge")) {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      $("#badge-list").closest(".card").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+      return;
+    }
+    openObject(n.dataset.id, { from: n });
     // language nodes carry data-tool, which the global handler turns into a table filter
   });
 
